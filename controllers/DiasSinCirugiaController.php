@@ -37,7 +37,7 @@ class DiasSinCirugiaController extends Controller
      * @return mixed
      */
     public function actionIndex()
-    {    
+    {
         $searchModel = new DiasSinCirugiaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -54,7 +54,7 @@ class DiasSinCirugiaController extends Controller
      * @return mixed
      */
     public function actionView($id)
-    {   
+    {
         $request = Yii::$app->request;
         if($request->isAjax){
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -63,9 +63,9 @@ class DiasSinCirugiaController extends Controller
                     'content'=>$this->renderAjax('view', [
                         'model' => $this->findModel($id),
                     ]),
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                            Html::a('Edit',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
-                ];    
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                            Html::a('Editar',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
+                ];
         }else{
             return $this->render('view', [
                 'model' => $this->findModel($id),
@@ -82,7 +82,7 @@ class DiasSinCirugiaController extends Controller
     public function actionCreate()
     {
         $request = Yii::$app->request;
-        $model = new DiasSinCirugia();  
+        $model = new DiasSinCirugia();
 
         if($request->isAjax){
             /*
@@ -91,33 +91,33 @@ class DiasSinCirugiaController extends Controller
             Yii::$app->response->format = Response::FORMAT_JSON;
             if($request->isGet){
                 return [
-                    'title'=> "Create new DiasSinCirugia",
+                    'title'=> "Crear nueva fecha sin atencion",
                     'content'=>$this->renderAjax('create', [
                         'model' => $model,
                     ]),
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                                Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-        
-                ];         
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                                Html::button('Guardar',['class'=>'btn btn-primary','type'=>"submit"])
+
+                ];
             }else if($model->load($request->post()) && $model->save()){
                 return [
                     'forceReload'=>'#crud-datatable-pjax',
-                    'title'=> "Create new DiasSinCirugia",
-                    'content'=>'<span class="text-success">Create DiasSinCirugia success</span>',
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                            Html::a('Create More',['create'],['class'=>'btn btn-primary','role'=>'modal-remote'])
-        
-                ];         
-            }else{           
+                    'title'=> "Crear nueva fecha sin atencion",
+                    'content'=>'<span class="text-success">Creación DiasSinCirugia exitosa</span>',
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                            Html::a('Crear mas',['create'],['class'=>'btn btn-primary','role'=>'modal-remote'])
+
+                ];
+            }else{
                 return [
-                    'title'=> "Create new DiasSinCirugia",
+                    'title'=> "Crear nueva fecha sin atencion",
                     'content'=>$this->renderAjax('create', [
                         'model' => $model,
                     ]),
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                                Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-        
-                ];         
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                                Html::button('Guardar',['class'=>'btn btn-primary','type'=>"submit"])
+
+                ];
             }
         }else{
             /*
@@ -131,7 +131,7 @@ class DiasSinCirugiaController extends Controller
                 ]);
             }
         }
-       
+
     }
 
     /**
@@ -144,7 +144,9 @@ class DiasSinCirugiaController extends Controller
     public function actionUpdate($id)
     {
         $request = Yii::$app->request;
-        $model = $this->findModel($id);       
+        $model = $this->findModel($id);
+        $model = $this->findModel($id);
+        $model->fecha = date('d/m/Y',strtotime($model->fecha));
 
         if($request->isAjax){
             /*
@@ -153,13 +155,13 @@ class DiasSinCirugiaController extends Controller
             Yii::$app->response->format = Response::FORMAT_JSON;
             if($request->isGet){
                 return [
-                    'title'=> "Update DiasSinCirugia #".$id,
+                    'title'=> "Actualizar fecha #".$id,
                     'content'=>$this->renderAjax('update', [
                         'model' => $model,
                     ]),
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                                Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-                ];         
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                                Html::button('Guardar',['class'=>'btn btn-primary','type'=>"submit"])
+                ];
             }else if($model->load($request->post()) && $model->save()){
                 return [
                     'forceReload'=>'#crud-datatable-pjax',
@@ -167,18 +169,18 @@ class DiasSinCirugiaController extends Controller
                     'content'=>$this->renderAjax('view', [
                         'model' => $model,
                     ]),
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                            Html::a('Edit',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
-                ];    
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                            Html::a('Editar',['update','id'=>$id],['class'=>'btn btn-primary','role'=>'modal-remote'])
+                ];
             }else{
                  return [
-                    'title'=> "Update DiasSinCirugia #".$id,
+                    'title'=> "Actualizar fecha #".$id,
                     'content'=>$this->renderAjax('update', [
                         'model' => $model,
                     ]),
-                    'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
-                                Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-                ];        
+                    'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
+                                Html::button('Guardar',['class'=>'btn btn-primary','type'=>"submit"])
+                ];
             }
         }else{
             /*
@@ -230,7 +232,7 @@ class DiasSinCirugiaController extends Controller
      * @return mixed
      */
     public function actionBulkDelete()
-    {        
+    {
         $request = Yii::$app->request;
         $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
         foreach ( $pks as $pk ) {
@@ -250,7 +252,7 @@ class DiasSinCirugiaController extends Controller
             */
             return $this->redirect(['index']);
         }
-       
+
     }
 
     /**

@@ -176,13 +176,16 @@ CrudAsset::register($this);
          ?>
 
          </div>
-         <div class='col-md-3'>
-           <?=$form->field($model, 'id_estado')->dropDownList($model->getEstados())->label('Estado') ;?>
-
-          </div>
           <div class='col-md-6'>
             <?=$form->field($model,"observacion")->textInput()->label("Observacion(Detalles)");?>
          </div>
+         <div class='col-md-3'>
+           <? if (!isset($model->id_estado)){
+                echo $form->field($model, 'id_estado')->hiddenInput(['value'=>1])->label(false);
+           } else {?>
+           <? echo $form->field($model, 'id_estado')->dropDownList($model->getEstados())->label('Estado') ;
+           }?>
+          </div>
          <div class="x_content">
                <div class="modal fade bs-paciente-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
                  <div class="modal-dialog modal-lg">

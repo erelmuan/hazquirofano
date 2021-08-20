@@ -16,7 +16,7 @@ Icon::map($this, Icon::WHHG);
 use yii\bootstrap\Modal;
 // Maps the Elusive icon font framework/* @var $this yii\web\View */
 
-$this->title = 'Plantillas';
+$this->title = 'Calendario';
 ?>
 <!-- 1. jQuery UI -->
 <script src="http://code.jquery.com/jquery.min.js"></script>

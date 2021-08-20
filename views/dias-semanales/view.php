@@ -6,13 +6,12 @@ use yii\widgets\DetailView;
 /* @var $model app\models\DiasSemanales */
 ?>
 <div class="dias-semanales-view">
- 
+
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
             'dia',
-            'numero_semanal',
             'habilitado:boolean',
         ],
     ]) ?>

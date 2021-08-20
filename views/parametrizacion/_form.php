@@ -49,13 +49,13 @@ $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_VERTICAL, 'formConfig'=>['la
 
       <div class="row" >
 
-      <div class="col-sm-4 invoice-col">
+      <div class="col-sm-3 invoice-col">
         <?= $form->field($model, 'hora_inicio')->widget(TimePicker::classname(), [ 'pluginOptions' => [ 'showSeconds' => false,'showMeridian' => false ,'minuteStep' => 30],]); ?>
         <?= $form->field($model, 'hora_final')->widget(TimePicker::classname(),  [ 'pluginOptions' => [ 'showSeconds' => false,'showMeridian' => false,'minuteStep' => 30],]); ?>
         <?= $form->field($model, 'horario_minimo')->widget(TimePicker::classname(),  [  'pluginOptions' => [ 'showSeconds' => false,'showMeridian' => false,'minuteStep' => 30],]); ?>
 
       </div>
-      <div class="col-sm-4 invoice-col">
+      <div class="col-sm-3 invoice-col">
 
         <?= $form->field($model, 'dias_anticipacion')->widget(TouchSpin::classname(),[
             'name' => 't5',
@@ -68,7 +68,7 @@ $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_VERTICAL, 'formConfig'=>['la
         'boostat' => 5,
         'maxboostedstep' => 10,
         'prefix' => 'dias',
-    ]])->input('dias_anticipacion')->label("Dias para cancelar o modificar la cirugia");  ?>
+    ]])->input('dias_anticipacion')->label("Dias para modificar la cirugia");  ?>
     <?= $form->field($model, 'dias_creacion')->widget(TouchSpin::classname(),[
         'name' => 't5',
         'pluginOptions' => [
@@ -80,10 +80,10 @@ $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_VERTICAL, 'formConfig'=>['la
     'boostat' => 5,
     'maxboostedstep' => 10,
     'prefix' => 'dias',
-    ]])->input('dias_creacion')->label("Maximo de dias para crear una cirugia");  ?>
+    ]])->input('dias_creacion')->label("Max. dias para crear una cirugia");  ?>
 
       </div>
-      <div class="col-sm-4 invoice-col">
+      <div class="col-sm-3 invoice-col">
         <label> Parametrizacion especialidades </label>
         <p>
         <?= Html::a('Ir a especialidades', "?r=especialidad/index", ['class' => 'btn btn-success']) ?>
@@ -96,6 +96,16 @@ $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_VERTICAL, 'formConfig'=>['la
       <p>
       <?= Html::a('Ir a observaciones', "?r=observacionquirurgica/index", ['class' => 'btn btn-success']) ?>
      </p>
+      </div>
+      <div class="col-sm-3 invoice-col">
+        <label> Parametrizacion fecha sin atención </label>
+        <p>
+        <?= Html::a('Ir a fechas sin atención', "?r=dias-sin-cirugia/index", ['class' => 'btn btn-success']) ?>
+       </p>
+       <label> Parametrizacion dias sin atención </label>
+       <p>
+       <?= Html::a('Ir a dias sin atención', "?r=dias-semanales/index", ['class' => 'btn btn-success']) ?>
+      </p>
       </div>
     </div>
   </div>

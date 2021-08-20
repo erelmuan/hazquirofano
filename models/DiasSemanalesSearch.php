@@ -62,7 +62,7 @@ class DiasSemanalesSearch extends DiasSemanales
             'habilitado' => $this->habilitado,
         ]);
 
-        $query->andFilterWhere(['like', 'dia', $this->dia]);
+        $query->andFilterWhere(['ilike', 'dia', $this->dia]);
 
         return $dataProvider;
     }

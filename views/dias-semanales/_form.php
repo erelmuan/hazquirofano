@@ -11,13 +11,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'dia')->textInput() ?>
-
-    <?= $form->field($model, 'numero_semanal')->textInput() ?>
+    <?= $form->field($model, 'dia')->input("text",['readonly' => true])->label('Día') ?>
 
     <?= $form->field($model, 'habilitado')->checkbox() ?>
 
-  
+
 	<?php if (!Yii::$app->request->isAjax){ ?>
 	  	<div class="form-group">
 	        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
@@ -25,5 +23,5 @@ use yii\widgets\ActiveForm;
 	<?php } ?>
 
     <?php ActiveForm::end(); ?>
-    
+
 </div>
