@@ -59,10 +59,20 @@ return [
   ],
 
 
-  // [
-  //     'class'=>'\kartik\grid\DataColumn',
-  //     'attribute'=>'descripcion',
-  // ],
+  [
+      'class'=>'\kartik\grid\DataColumn',
+      'attribute'=>'link',
+      'value' => function($dataProvider, $key, $index, $widget) {
+          $key = str_replace("[","",$key);
+          $key = str_replace("]","",$key);
+        return Html::a('Seleccionar dia',['cirugiaprogramada/create',"dia"=> $dataProvider->fecha_cirugia]
+
+          ,[    'class' => 'text-success','title'=>'Crea una cirugia programada','data-toggle'=>'tooltip']
+         );
+
+       },
+        'format' => 'raw',
+  ],
     // [
     //     'class'=>'\kartik\grid\DataColumn',
     //     'attribute'=>'descripcion',
