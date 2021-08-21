@@ -20,6 +20,7 @@ class QuirofanoSearch extends Quirofano
         return [
             [['id'], 'integer'],
             [['nombre', 'observacion'], 'safe'],
+            [['habilitado'], 'boolean'],
         ];
     }
 
@@ -57,6 +58,7 @@ class QuirofanoSearch extends Quirofano
 
         $query->andFilterWhere([
             'id' => $this->id,
+           'habilitado' => $this->habilitado, 
         ]);
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre])

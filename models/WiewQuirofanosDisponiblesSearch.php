@@ -47,6 +47,7 @@ class WiewQuirofanosDisponiblesSearch extends WiewQuirofanosDisponibles
     {
         $query = WiewQuirofanosDisponibles::find()
         ->innerJoinWith('quirofano', 'quirofano.id = WiewQuirofanosDisponibles.id_quirofano')
+        ->where(['and','quirofano.habilitado= true' ])
         // ->where(['and','fecha_cirugia not in (6,0) ' ])
 // select to_char((date_trunc('week',current_date)::date) + i,'Day') as wkday from generate_series(5,6) i
         ;

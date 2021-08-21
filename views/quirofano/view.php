@@ -6,13 +6,14 @@ use yii\widgets\DetailView;
 /* @var $model app\models\Quirofano */
 ?>
 <div class="quirofano-view">
- 
+
     <?= DetailView::widget([
         'model' => $model,
         'attributes' => [
             'id',
             'nombre',
             'observacion',
+            'habilitado:boolean', 
         ],
     ]) ?>
 

@@ -10,7 +10,7 @@ use Yii;
  * @property int $id
  * @property string $nombre
  * @property string $observacion
- *
+ * @property bool $habilitado
  * @property Cirugiaprogramada[] $cirugiaprogramadas
  */
 class Quirofano extends \yii\db\ActiveRecord
@@ -30,6 +30,7 @@ class Quirofano extends \yii\db\ActiveRecord
     {
         return [
             [['nombre', 'observacion'], 'string'],
+            [['habilitado'], 'boolean'],
         ];
     }
 
@@ -42,6 +43,7 @@ class Quirofano extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nombre' => 'Nombre',
             'observacion' => 'Observacion',
+            'habilitado' => 'Habilitado', 
         ];
     }
 
