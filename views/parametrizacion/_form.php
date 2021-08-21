@@ -26,6 +26,7 @@ use kartik\datecontrol\DateControl;
 use kartik\widgets\TimePicker;
 use yii\widgets\MaskedInput;
 use kartik\touchspin\TouchSpin;
+use kartik\range\RangeInput;
 ?>
 <div id="w0" class="x_panel">
   <div class="x_title"><h2> <?=$model->isNewRecord ? "<i class='glyphicon glyphicon-plus'></i> NUEVA BIOPSIA" : "<i class='glyphicon glyphicon-pencil'></i> PARAMETRIZACIÓN" ; ?> </h2>
@@ -80,32 +81,43 @@ $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_VERTICAL, 'formConfig'=>['la
     'boostat' => 5,
     'maxboostedstep' => 10,
     'prefix' => 'dias',
-    ]])->input('dias_creacion')->label("Max. dias para crear una cirugia");  ?>
+    ]])->input('dias_creacion')->label("Max. dias para crear una cirugia");
 
+    echo $form->field($model, 'niveles')->widget(RangeInput::classname(), [
+        'options' => ['placeholder' => 'Rate (0 - 5)...'],
+        'html5Container' => ['style' => 'width:150px'],
+        'html5Options' => ['min' => 20, 'max' => 100],
+        'addon' => ['append' => ['content' => '%']]
+    ])->label("Nivel(empieza en verde, el resto es amarillo)");
+    ?>
       </div>
       <div class="col-sm-3 invoice-col">
-        <label> Parametrizacion especialidades </label>
+        <label> Parametrización especialidades </label>
         <p>
         <?= Html::a('Ir a especialidades', "?r=especialidad/index", ['class' => 'btn btn-success']) ?>
        </p>
-       <label> Parametrizacion equipos </label>
+       <label> Parametrización equipos </label>
        <p>
        <?= Html::a('Ir a equipos', "?r=equipo/index", ['class' => 'btn btn-success']) ?>
       </p>
-      <label> Parametrizacion Observaciones </label>
+      <label> Parametrización Observaciones </label>
       <p>
       <?= Html::a('Ir a observaciones', "?r=observacionquirurgica/index", ['class' => 'btn btn-success']) ?>
      </p>
       </div>
       <div class="col-sm-3 invoice-col">
-        <label> Parametrizacion fecha sin atención </label>
+        <label> Parametrización fecha sin atención </label>
         <p>
         <?= Html::a('Ir a fechas sin atención', "?r=dias-sin-cirugia/index", ['class' => 'btn btn-success']) ?>
        </p>
-       <label> Parametrizacion dias sin atención </label>
+       <label> Parametrización dias sin atención </label>
        <p>
        <?= Html::a('Ir a dias sin atención', "?r=dias-semanales/index", ['class' => 'btn btn-success']) ?>
       </p>
+      <label> Parametrización Quirofanos </label>
+      <p>
+      <?= Html::a('Ir a quirofanos', "?r=quirofano/index", ['class' => 'btn btn-success']) ?>
+     </p>
       </div>
     </div>
   </div>

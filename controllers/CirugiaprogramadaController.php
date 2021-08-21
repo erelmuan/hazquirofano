@@ -360,19 +360,6 @@ class CirugiaprogramadaController extends Controller
         ]);
     }
 
-    /**
-     * Deletes an existing Cirugiaprogramada model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
-     */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
-
-        return $this->redirect(['index']);
-    }
 
     /**
      * Finds the Cirugiaprogramada model based on its primary key value.
@@ -414,17 +401,40 @@ class CirugiaprogramadaController extends Controller
 
           $events= Cirugiaprogramada::find()->all();
           $tasks = [];
-          foreach ($events as $eve) {
-            $event= new \yii2fullcalendar\models\Event();
-            $event->id=$eve->id;
-            $event->title=$eve->quirofano->nombre;
-            $event->start=date("Y-m-d H:i:s", strtotime($eve->fecha_cirugia.' '.$eve->hora_inicio));
-            // $event->start=date("Y-m-d H:i:s", strtotime('2021-06-28 07:00'));
-            // $event->end= date("Y-m-d H:i:s", strtotime('2021-06-28 10:00'));
-            $event->url='index.php?r=cirugiaprogramada/fecha&dia='.$eve->fecha_cirugia;
-            $event->color= "grey";
-            $tasks[]=$event;
-          }
+          // foreach ($events as $eve) {
+          //   $event= new \yii2fullcalendar\models\Event();
+          //   $event->id=$eve->id;
+          //   $event->title=$eve->quirofano->nombre;
+          //   $event->start=date("Y-m-d H:i:s", strtotime($eve->fecha_cirugia.' '.$eve->hora_inicio));
+          //   // $event->start=date("Y-m-d H:i:s", strtotime('2021-06-28 07:00'));
+          //   // $event->end= date("Y-m-d H:i:s", strtotime('2021-06-28 10:00'));
+          //   $event->url='index.php?r=cirugiaprogramada/fecha&dia='.$eve->fecha_cirugia;
+          //   $event->color= "grey";
+          //   $tasks[]=$event;
+          // }
+          $event= new \yii2fullcalendar\models\Event();
+            $event->id=1;
+            $event->title='QUIROFANO A';
+            $event->start=date("Y-m-d");
+          $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+          $event->color= "grey";
+          $tasks[]=$event;
+          $event= new \yii2fullcalendar\models\Event();
+
+          $event->id=2;
+          $event->title='QUIROFANO B';
+          $event->start=date("Y-m-d");
+        $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+        $event->color= "blue";
+          $tasks[]=$event;
+          $event= new \yii2fullcalendar\models\Event();
+
+          $event->id=3;
+          $event->title='QUIROFANO C';
+          $event->start=date("Y-m-d");
+        $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+        $event->color= "red";
+          $tasks[]=$event;
             // $Event = new \yii2fullcalendar\models\Event();
             // $Event->id = 1;
             // $Event->title = 'Testing';

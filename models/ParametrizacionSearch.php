@@ -2,6 +2,7 @@
 
 namespace app\models;
 
+use Yii; 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Parametrizacion;
@@ -17,7 +18,7 @@ class ParametrizacionSearch extends Parametrizacion
     public function rules()
     {
         return [
-            [['id', 'dias_anticipacion', 'dias_creacion'], 'integer'],
+            [['id', 'dias_anticipacion', 'dias_creacion', 'niveles'], 'integer'],
             [['hora_inicio', 'hora_final', 'horario_minimo'], 'safe'],
         ];
     }
@@ -64,6 +65,7 @@ class ParametrizacionSearch extends Parametrizacion
             'dias_anticipacion' => $this->dias_anticipacion,
             'dias_creacion' => $this->dias_creacion,
             'horario_minimo' => $this->horario_minimo,
+            'niveles' => $this->niveles,
         ]);
 
         return $dataProvider;

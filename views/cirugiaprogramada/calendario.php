@@ -112,6 +112,8 @@ $this->params['breadcrumbs'][] = $this->title;
         'themeSystem' => 'jquery-ui',
        // 'themeSystem' => 'bootstrap3',
         'weekends'=> false, //ocultará sábados y domingos
+        'height'=> 1000,
+        'width'=> 300,
           'selectable' => true,
          'eventLimit' => true,
          'dayClick'=>new JSExpression("function(date, allDay, jsEvent, view ) {
@@ -120,6 +122,10 @@ $this->params['breadcrumbs'][] = $this->title;
         }"),
         'eventClick'=> new JSExpression("function(date, info, jsEvent ) {
           date.url;
+        }"),
+        'eventRender'=> new JSExpression("function(event, element) {
+            element.css('font-size', '1.2em');
+            element.css('padding', '0.5px');
         }"),
 
 

@@ -13,6 +13,7 @@ use Yii;
  * @property int $dias_anticipacion
  * @property int $dias_creacion
  * @property string $horario_minimo
+  * @property int $niveles
  */
 class Parametrizacion extends \yii\db\ActiveRecord
 {
@@ -32,7 +33,7 @@ class Parametrizacion extends \yii\db\ActiveRecord
         return [
             [['hora_inicio', 'hora_final', 'horario_minimo'], 'safe'],
             [['dias_anticipacion', 'dias_creacion'], 'default', 'value' => null],
-            [['dias_anticipacion', 'dias_creacion'], 'integer'],
+            [['dias_anticipacion', 'dias_creacion','niveles'], 'integer'],
         ];
     }
 
@@ -48,6 +49,7 @@ class Parametrizacion extends \yii\db\ActiveRecord
             'dias_anticipacion' => 'Dias Anticipacion',
             'dias_creacion' => 'Dias Creacion',
             'horario_minimo' => 'Horario Minimo',
+            'niveles' => 'Niveles', 
         ];
     }
 }
