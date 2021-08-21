@@ -228,7 +228,7 @@ class CirugiaprogramadaController extends Controller
       ////////////MEDICO/////////////////
       //El horario por defecto esta asociado al quirofano A
       //El primer quirofano disponible que encuentre
-      $quirofano=Quirofano::find()->where(['and','habilitado= true' ])->one();
+      $quirofano=Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->one();
       $tiempo_default= $this->cantidadTiempo($dia,$quirofano->id);
 
       $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);

@@ -165,7 +165,7 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
       return $this->hasOne(Quirofano::className(), ['id' => 'id_quirofano']);
   }
   public function getQuirofanos() {
-      return ArrayHelper::map(Quirofano::find()->where(['and','habilitado= true' ])->all(), 'id','nombre');
+      return ArrayHelper::map(Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->all(), 'id','nombre');
 
   }
 }
