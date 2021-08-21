@@ -25,6 +25,7 @@ use yii\helpers\Json;
 use yii\helpers\ArrayHelper;
 
 use kartik\widgets\Growl;
+use app\models\Quirofano;
 
 
 /**
@@ -226,8 +227,9 @@ class CirugiaprogramadaController extends Controller
       $dataProviderPac->pagination->pageSize=7;
       ////////////MEDICO/////////////////
       //El horario por defecto esta asociado al quirofano A
-      //Quirofano A  id=2
-      $tiempo_default= $this->cantidadTiempo($dia,2);
+      //El primer quirofano disponible que encuentre
+      $quirofano=Quirofano::find()->where(['and','habilitado= true' ])->one();
+      $tiempo_default= $this->cantidadTiempo($dia,$quirofano->id);
 
       $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
 
