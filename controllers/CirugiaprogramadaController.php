@@ -17,6 +17,8 @@ use yii\helpers\Html;
 use app\models\MedicoSearch;
 use app\models\Medico;
 use app\models\Equipo;
+use app\models\HistorialRangoHorario;
+
 
 use app\models\Cirugiaequipo;
 use app\models\ObservacionCirugia;
@@ -143,7 +145,7 @@ class CirugiaprogramadaController extends Controller
        $sumTiempo= $model::find()->select(['cant_tiempo'])
        ->where(['and',"fecha_cirugia = '".$dia."' and id_quirofano =".$quirofano  ])
        ->sum('cant_tiempo');
-       $parametrizacion=$modelParametrizacion::find()
+       $parametrizacion=Parametrizacion::find()
        ->select(['hora_inicio'])->one();
        if($sumTiempo==false)
           $sumTiempo='00:00:00';
@@ -305,6 +307,10 @@ class CirugiaprogramadaController extends Controller
                 $modelobservacion_cirugia->save();
 
                  }
+              $historia_rang= new HistorialRangoHorario();
+              $parametrizacion= new Parametrizacion();
+
+              // $historia_rang
               return $this->redirect(['view', 'id' => $model->id]);
             }
 
@@ -395,14 +401,30 @@ class CirugiaprogramadaController extends Controller
     ]);
 
     }
+    public function porcentaje($model_quirofano){
+      $parametrizacion= Parametrizacion::find()->one();
+      $inicio= new \DateTime($parametrizacion->hora_inicio);
+      $fin=new \DateTime($parametrizacion->hora_final);
 
-        public function actionCalendario()
-        {
+      $horas_disponibles=2;
+      $horas_usadas =3;
+      $porcentaje=100*$horas_usadas/$horas_disponibles;
+      $porcentaje=round($porcentaje, 0);   // Quitar los decimales
+      return ($porcentaje);
+      //Obtener el valor total de horas disponibles
+      //obtener la cantidad de horas usadas en el quierofano
+      //calcular el porcentaje  horas_disponibles * horas_usadas /100
+    }
+
+        public function actionCalendario(){
           $searchModel = new WiewQuirofanosDisponiblesSearch();
           $dataProvider = $searchModel->search($this->request->queryParams);
+          $parametrizacion = new Parametrizacion();
+          // ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= ".$equipo->dias])->count();
 
-          $events= Cirugiaprogramada::find()->all();
-          $tasks = [];
+          $cirugias= Cirugiaprogramada::find()->select("fecha_cirugia")->distinct()
+          ->andWhere(["and","fecha_cirugia >= (current_date::date - interval '60 day')"])->all();
+          // $tasks = [];
           // foreach ($events as $eve) {
           //   $event= new \yii2fullcalendar\models\Event();
           //   $event->id=$eve->id;
@@ -414,29 +436,54 @@ class CirugiaprogramadaController extends Controller
           //   $event->color= "grey";
           //   $tasks[]=$event;
           // }
-          $event= new \yii2fullcalendar\models\Event();
-            $event->id=1;
-            $event->title='QUIROFANO A';
-            $event->start=date("Y-m-d");
-          $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
-          $event->color= "grey";
-          $tasks[]=$event;
-          $event= new \yii2fullcalendar\models\Event();
+          $quirofanos= Quirofano::find()->all();
+          $tasks = [];
+          foreach ($cirugias as $cirugia) {
+            foreach ($quirofanos as $quirofano) {
+              $event= new \yii2fullcalendar\models\Event();
+                $event->id= $quirofano->id;
+                $valor=$this->porcentaje($quirofano);
+                //tengo que tener el modelo de parametriazacion
+                //harcodeado si el valor es 1 es que se uso el 100%
+                if($valor==1){
+                  $event->color= "red";
+                }else {
+                  if ($valor>=50){
+                    $event->color= "yellow";
+                  }else {
+                    $event->color= "green";
 
-          $event->id=2;
-          $event->title='QUIROFANO B';
-          $event->start=date("Y-m-d");
-        $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
-        $event->color= "blue";
-          $tasks[]=$event;
-          $event= new \yii2fullcalendar\models\Event();
-
-          $event->id=3;
-          $event->title='QUIROFANO C';
-          $event->start=date("Y-m-d");
-        $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
-        $event->color= "red";
-          $tasks[]=$event;
+                  }
+                }
+                $event->title= $quirofano->nombre." - ".$valor."%";
+                $event->start=date("Y-m-d", strtotime($cirugia->fecha_cirugia));
+                $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+                $tasks[]=$event;
+            }
+        }
+        //   $event= new \yii2fullcalendar\models\Event();
+        //     $event->id=1;
+        //     $event->title='QUIROFANO A';
+        //     $event->start=date("Y-m-d");
+        //   $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+        //   $event->color= "grey";
+        //   $tasks[]=$event;
+        //   $event= new \yii2fullcalendar\models\Event();
+        //
+        //   $event->id=2;
+        //   $event->title='QUIROFANO B';
+        //   $event->start=date("Y-m-d");
+        // $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+        // $event->color= "blue";
+        //   $tasks[]=$event;
+        //   $event= new \yii2fullcalendar\models\Event();
+        //
+        //   $event->id=3;
+        //   $event->title='QUIROFANO C';
+        //   $event->start=date("Y-m-d");
+        // $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+        // $event->color= "red";
+        //   $tasks[]=$event;
             // $Event = new \yii2fullcalendar\models\Event();
             // $Event->id = 1;
             // $Event->title = 'Testing';

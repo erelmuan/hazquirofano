@@ -85,7 +85,7 @@ $form = ActiveForm::begin(['type'=>ActiveForm::TYPE_VERTICAL, 'formConfig'=>['la
 
     echo $form->field($model, 'niveles')->widget(RangeInput::classname(), [
         'options' => ['placeholder' => 'Rate (0 - 5)...'],
-        'html5Container' => ['style' => 'width:150px'],
+        'html5Container' => ['style' => 'width:125px'],
         'html5Options' => ['min' => 20, 'max' => 100],
         'addon' => ['append' => ['content' => '%']]
     ])->label("Nivel(empieza en verde, el resto es amarillo)");
