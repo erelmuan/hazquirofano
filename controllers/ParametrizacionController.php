@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Parametrizacion;
 use app\models\ParametrizacionSearch;
+use app\models\HistorialRangoHorario;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -145,9 +146,18 @@ class ParametrizacionController extends Controller
     {
         $request = Yii::$app->request;
         $model = $this->findModel($id);
+        $model_rango=  HistorialRangoHorario::find()->orderBy(['id'=>SORT_DESC])->one();
 
-
+          //  Se actualiza el historial de horarios en los rangos si hay una modificacion en el horario
             if ($model->load($request->post()) && $model->save()) {
+              if(strtotime($model_rango->hora_inicio )<> strtotime($model->hora_inicio) or strtotime($model_rango->hora_final) <> strtotime($model->hora_final)  ){
+                $model_rango = new HistorialRangoHorario();
+                $model_rango->hora_inicio=$model->hora_inicio;
+                $model_rango->hora_final=$model->hora_final;
+                $model_rango->fecha=date("Y-m-d");
+                $model_rango->save();
+
+              }
                 return $this->redirect(['view', 'id' => $model->id]);
             } else {
                 return $this->render('update', [
@@ -157,64 +167,8 @@ class ParametrizacionController extends Controller
 
     }
 
-    /**
-     * Delete an existing Parametrizacion model.
-     * For ajax request will return json object
-     * and for non-ajax request if deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionDelete($id)
-    {
-        $request = Yii::$app->request;
-        $this->findModel($id)->delete();
-
-        if($request->isAjax){
-            /*
-            *   Process for ajax request
-            */
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
-        }else{
-            /*
-            *   Process for non-ajax request
-            */
-            return $this->redirect(['index']);
-        }
 
 
-    }
-
-     /**
-     * Delete multiple existing Parametrizacion model.
-     * For ajax request will return json object
-     * and for non-ajax request if deletion is successful, the browser will be redirected to the 'index' page.
-     * @param integer $id
-     * @return mixed
-     */
-    public function actionBulkDelete()
-    {
-        $request = Yii::$app->request;
-        $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
-        foreach ( $pks as $pk ) {
-            $model = $this->findModel($pk);
-            $model->delete();
-        }
-
-        if($request->isAjax){
-            /*
-            *   Process for ajax request
-            */
-            Yii::$app->response->format = Response::FORMAT_JSON;
-            return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
-        }else{
-            /*
-            *   Process for non-ajax request
-            */
-            return $this->redirect(['index']);
-        }
-
-    }
 
     /**
      * Finds the Parametrizacion model based on its primary key value.

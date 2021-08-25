@@ -5,6 +5,9 @@ use Yii;
 use app\models\Cirugiaprogramada;
 use app\models\CirugiaprogramadaSearch;
 use app\models\WiewQuirofanosDisponiblesSearch;
+use app\models\WiewHorasOcupadas;
+use app\models\DiasSinCirugia;
+
 
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -401,13 +404,31 @@ class CirugiaprogramadaController extends Controller
     ]);
 
     }
-    public function porcentaje($model_quirofano){
-      $parametrizacion= Parametrizacion::find()->one();
-      $inicio= new \DateTime($parametrizacion->hora_inicio);
-      $fin=new \DateTime($parametrizacion->hora_final);
+    public function porcentaje($id_quirofano,$fecha){
 
-      $horas_disponibles=2;
-      $horas_usadas =3;
+      $historial_rango= HistorialRangoHorario::find()->where(["and","fecha <= '".$fecha."'"])->orderBy(['id'=>SORT_DESC])->one();
+
+      $inicio= new \DateTime($historial_rango->hora_inicio);
+      $fin=new \DateTime($historial_rango->hora_final);
+      $tiempo = $inicio->diff($fin);
+      $minutos=$tiempo->format('%i')/60;
+      $hora=$tiempo->format('%h');
+      $horas_disponibles= $hora +$minutos;
+
+      $HU= WiewHorasOcupadas::find()->select(['horas_ocupadas'])->where(["and","id_quirofano   =".$id_quirofano." and fecha_cirugia= '".$fecha."'"])->one();
+      if(!isset($HU->horas_ocupadas)){
+        $horas_usadas=0;
+      }else {
+        $mDateI= new \DateTime ( $HU->horas_ocupadas);
+        $mDateF=new \DateTime('00:00:00');
+
+        $horas_ocupadas=$mDateI->diff($mDateF);
+        $minutos=$horas_ocupadas->format('%i')/60;
+        $hora=$horas_ocupadas->format('%h');
+        $horas_usadas= $hora +$minutos;
+      }
+
+
       $porcentaje=100*$horas_usadas/$horas_disponibles;
       $porcentaje=round($porcentaje, 0);   // Quitar los decimales
       return ($porcentaje);
@@ -419,11 +440,11 @@ class CirugiaprogramadaController extends Controller
         public function actionCalendario(){
           $searchModel = new WiewQuirofanosDisponiblesSearch();
           $dataProvider = $searchModel->search($this->request->queryParams);
-          $parametrizacion = new Parametrizacion();
+            $parametrizacion= Parametrizacion::find()->one();
           // ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= ".$equipo->dias])->count();
 
           $cirugias= Cirugiaprogramada::find()->select("fecha_cirugia")->distinct()
-          ->andWhere(["and","fecha_cirugia >= (current_date::date - interval '60 day')"])->all();
+          ->andWhere(["and","fecha_cirugia >= (current_date::date - interval '60 day') and id_estado !=2 and id_estado !=3 "])->all();
           // $tasks = [];
           // foreach ($events as $eve) {
           //   $event= new \yii2fullcalendar\models\Event();
@@ -436,30 +457,44 @@ class CirugiaprogramadaController extends Controller
           //   $event->color= "grey";
           //   $tasks[]=$event;
           // }
+          //NO TIENE QUE SER ANULADA ID 2 NI REPROGRAMADA ID REPROGRAMADA
           $quirofanos= Quirofano::find()->all();
           $tasks = [];
           foreach ($cirugias as $cirugia) {
             foreach ($quirofanos as $quirofano) {
               $event= new \yii2fullcalendar\models\Event();
                 $event->id= $quirofano->id;
-                $valor=$this->porcentaje($quirofano);
-                //tengo que tener el modelo de parametriazacion
-                //harcodeado si el valor es 1 es que se uso el 100%
-                if($valor==1){
-                  $event->color= "red";
-                }else {
-                  if ($valor>=50){
-                    $event->color= "yellow";
-                  }else {
-                    $event->color= "green";
+                $fecha=date("Y-m-d", strtotime($cirugia->fecha_cirugia));
 
-                  }
-                }
+
+                    $valor=$this->porcentaje($quirofano->id,$fecha);
+                    if(trim($valor)==='100'){
+                      $event->color= "red";
+                    }else {
+                      if ($valor>=$parametrizacion->niveles){
+                        $event->color= '#d1b50b';
+                      }else {
+                        $event->color= "green";
+
+                      }
+                    }
+
                 $event->title= $quirofano->nombre." - ".$valor."%";
-                $event->start=date("Y-m-d", strtotime($cirugia->fecha_cirugia));
-                $event->url='index.php?r=cirugiaprogramada/fecha&dia=';
+
+                $event->start=$fecha;
+                $event->url='index.php?r=cirugiaprogramada/fecha&dia='.$fecha;
                 $tasks[]=$event;
             }
+        }
+        //Entra si el quirofano tiene una cirugia programada
+        $dia_sin_cirugias=DiasSinCirugia::find()->
+        andWhere(["and","fecha >= (current_date::date - interval '60 day')"])->all();
+        foreach ($dia_sin_cirugias as $dia_sin_cirugia) {
+            $event= new \yii2fullcalendar\models\Event();
+            $event->title=$dia_sin_cirugia->motivo;
+            $event->start=$dia_sin_cirugia->fecha;
+            $event->color= "blue";
+            $tasks[]=$event;
         }
         //   $event= new \yii2fullcalendar\models\Event();
         //     $event->id=1;

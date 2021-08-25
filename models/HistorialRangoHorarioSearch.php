@@ -18,8 +18,8 @@ class HistorialRangoHorarioSearch extends HistorialRangoHorario
     public function rules()
     {
         return [
-            [['id', 'id_cirugia_programada'], 'integer'],
-            [['hora_inicio', 'hora_final'], 'safe'],
+            [['id'], 'integer'],
+            [['hora_inicio', 'hora_final', 'fecha'], 'safe'],
         ];
     }
 
@@ -57,9 +57,9 @@ class HistorialRangoHorarioSearch extends HistorialRangoHorario
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'id_cirugia_programada' => $this->id_cirugia_programada,
             'hora_inicio' => $this->hora_inicio,
             'hora_final' => $this->hora_final,
+            'fecha' => $this->fecha,
         ]);
 
         return $dataProvider;

@@ -11,9 +11,9 @@ use yii\widgets\DetailView;
         'model' => $model,
         'attributes' => [
             'id',
-            'id_cirugia_programada',
             'hora_inicio',
             'hora_final',
+            'fecha',
         ],
     ]) ?>
 

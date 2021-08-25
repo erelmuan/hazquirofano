@@ -11,11 +11,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'id_cirugia_programada')->textInput() ?>
-
     <?= $form->field($model, 'hora_inicio')->textInput() ?>
 
     <?= $form->field($model, 'hora_final')->textInput() ?>
+
+    <?= $form->field($model, 'fecha')->textInput() ?>
 
   
 	<?php if (!Yii::$app->request->isAjax){ ?>

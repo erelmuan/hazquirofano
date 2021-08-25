@@ -16,15 +16,15 @@ return [
     // ],
     [
         'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'id_cirugia_programada',
-    ],
-    [
-        'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'hora_inicio',
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'hora_final',
+    ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'fecha',
     ],
     [
         'class' => 'kartik\grid\ActionColumn',

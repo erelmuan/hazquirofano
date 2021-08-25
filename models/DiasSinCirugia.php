@@ -27,7 +27,7 @@ class DiasSinCirugia extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['fecha'], 'required'],
+            [['fecha','motivo'], 'required'],
             [['fecha'], 'safe'],
             [['motivo'], 'string'],
         ];
