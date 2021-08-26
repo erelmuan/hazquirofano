@@ -18,7 +18,7 @@ use app\components\Metodos\Metodos;
 use yii\web\UploadedFile;
 use yii\helpers\Url;
 use yii\imagine\Image;
-use yii\helpers\Json;
+
 
 /**
  * UsuarioController implements the CRUD actions for Usuario model.

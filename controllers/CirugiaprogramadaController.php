@@ -41,20 +41,21 @@ class CirugiaprogramadaController extends Controller
     /**
      * @inheritDoc
      */
-    public function behaviors()
-    {
-        return array_merge(
-            parent::behaviors(),
-            [
-                'verbs' => [
-                    'class' => VerbFilter::className(),
-                    'actions' => [
-                        'delete' => ['POST'],
-                    ],
-                ],
-            ]
-        );
-    }
+
+     public function behaviors()
+     {
+         return [
+             'verbs' => [
+                 'class' => VerbFilter::className(),
+                 'actions' => [
+                     'delete' => ['post'],
+                     'bulk-delete' => ['post'],
+                 ],
+             ],
+         ];
+     }
+
+
 
     /**
      * Lists all Cirugiaprogramada models.

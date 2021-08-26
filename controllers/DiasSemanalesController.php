@@ -16,22 +16,7 @@ use yii\helpers\Html;
  */
 class DiasSemanalesController extends Controller
 {
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                    'bulk-delete' => ['post'],
-                ],
-            ],
-        ];
-    }
-
+    
     /**
      * Lists all DiasSemanales models.
      * @return mixed

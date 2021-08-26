@@ -98,10 +98,14 @@ CrudAsset::register($this);
                             <h5 class="title">
                                           DURACIÓN: <a><?=$cirugiaprogramada->cant_tiempo?></a>
                             </h5>
-                            <!-- <h5 class="title"> -->
-                                          <!-- Duración: <a><?//=$cirugiaprogramada->cant_tiempo?> hs</a> -->
-                            <!-- </h5> -->
                       </div>
+                      <div class="col-sm-4 invoice-col">
+                            <h5 class="title">
+                                          ESTADO: <a><?=$cirugiaprogramada->estado->descripcion?></a>
+                            </h5>
+
+                      </div>
+
 
                   </div>
                 </div>

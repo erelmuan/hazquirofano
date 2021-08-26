@@ -101,10 +101,10 @@ app\assets\AppAsset::register($this);
 
                             [
                                 "items" => [
-                                    ["label" => "Inicio", "url" => "index.php", "icon" => "fa fa-home"],
-                                    ["label" => "Biopsias", "url" => ["/biopsia"], 'icon' =>"fa icon-microscope"],
-                                    ["label" => "Paps", "url" => ["/pap"], "icon" => "fa fa-flask"],
-
+                                    ["label" => "Inicio", "url" => "index.php", "icon" => "home"],
+                                    ["label" => "Calendario", "url" => ["cirugiaprogramada/calendario"], "icon" => "calendar"],
+                                    ["label" => "Pacientes", "url" => ["/paciente"], "icon" => "group"],
+                                    ["label" => "Cirugias programadas", "url" => ["/cirugiaprogramada"], "icon" => "file-text-o"],
                                 ],
                             ]
                         );
@@ -118,7 +118,7 @@ app\assets\AppAsset::register($this);
                                     ["label" => "Equipos", "url" => ["/equipo"], "icon" => "files-o"],
                                     ["label" => "Pacientes", "url" => ["/paciente"], "icon" => "group"],
                                     [ 'separator' => '<br>',"label" => "Medicos",   "url" => ["/medico"],  'icon' =>"user-md"],
-                                    ["label" => "Solicitudes", "url" => ["/solicitud"], "icon" => "file-text-o"],
+                                    ["label" => "Cirugias programadas", "url" => ["/cirugiaprogramada"], "icon" => "file-text-o"],
 
 
                                 ],

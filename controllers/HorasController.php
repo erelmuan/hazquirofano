@@ -16,21 +16,7 @@ use yii\helpers\Html;
  */
 class HorasController extends Controller
 {
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                    'bulkdelete' => ['post'],
-                ],
-            ],
-        ];
-    }
+  
 
     /**
      * Lists all Horas models.

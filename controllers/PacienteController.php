@@ -28,22 +28,7 @@ use yii\helpers\Json;
  */
 class PacienteController extends Controller
 {
-    // /**
-    //  * @inheritdoc
-    //  */
-    // public function behaviors()
-    // {
-    //     return [
-    //         'verbs' => [
-    //             'class' => VerbFilter::className(),
-    //             'actions' => [
-    //                 'delete' => ['post'],
-    //                 'bulk-delete' => ['post'],
-    //             ],
-    //         ],
-    //     ];
-    // }
-
+  
     public function actionSearch()
     {
         $searchModelPac = new PacienteSearch();

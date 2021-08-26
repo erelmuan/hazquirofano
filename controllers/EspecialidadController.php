@@ -21,22 +21,7 @@ use app\components\Metodos\Metodos;
  */
 class EspecialidadController extends Controller
 {
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                    'bulk-delete' => ['post'],
-                ],
-            ],
-        ];
-    }
-
+    
     /**
      * Lists all Especialidad models.
      * @return mixed

@@ -16,28 +16,13 @@ use yii\helpers\Html;
  */
 class WiewHorasOcupadasController extends Controller
 {
-    /**
-     * @inheritdoc
-     */
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['post'],
-                    'bulk-delete' => ['post'],
-                ],
-            ],
-        ];
-    }
 
     /**
      * Lists all WiewHorasOcupadas models.
      * @return mixed
      */
     public function actionIndex()
-    {    
+    {
         $searchModel = new WiewHorasOcupadasSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -56,7 +41,7 @@ class WiewHorasOcupadasController extends Controller
      * @return mixed
      */
     public function actionView($fecha_cirugia, $horas_ocupadas, $id_quirofano)
-    {   
+    {
         $request = Yii::$app->request;
         if($request->isAjax){
             Yii::$app->response->format = Response::FORMAT_JSON;
@@ -67,7 +52,7 @@ class WiewHorasOcupadasController extends Controller
                     ]),
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                             Html::a('Edit',['update','fecha_cirugia, $horas_ocupadas, $id_quirofano'=>$fecha_cirugia, $horas_ocupadas, $id_quirofano],['class'=>'btn btn-primary','role'=>'modal-remote'])
-                ];    
+                ];
         }else{
             return $this->render('view', [
                 'model' => $this->findModel($fecha_cirugia, $horas_ocupadas, $id_quirofano),
@@ -84,7 +69,7 @@ class WiewHorasOcupadasController extends Controller
     public function actionCreate()
     {
         $request = Yii::$app->request;
-        $model = new WiewHorasOcupadas();  
+        $model = new WiewHorasOcupadas();
 
         if($request->isAjax){
             /*
@@ -99,8 +84,8 @@ class WiewHorasOcupadasController extends Controller
                     ]),
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                                 Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-        
-                ];         
+
+                ];
             }else if($model->load($request->post()) && $model->save()){
                 return [
                     'forceReload'=>'#crud-datatable-pjax',
@@ -108,9 +93,9 @@ class WiewHorasOcupadasController extends Controller
                     'content'=>'<span class="text-success">Create WiewHorasOcupadas success</span>',
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                             Html::a('Create More',['create'],['class'=>'btn btn-primary','role'=>'modal-remote'])
-        
-                ];         
-            }else{           
+
+                ];
+            }else{
                 return [
                     'title'=> "Create new WiewHorasOcupadas",
                     'content'=>$this->renderAjax('create', [
@@ -118,8 +103,8 @@ class WiewHorasOcupadasController extends Controller
                     ]),
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                                 Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-        
-                ];         
+
+                ];
             }
         }else{
             /*
@@ -133,7 +118,7 @@ class WiewHorasOcupadasController extends Controller
                 ]);
             }
         }
-       
+
     }
 
     /**
@@ -148,7 +133,7 @@ class WiewHorasOcupadasController extends Controller
     public function actionUpdate($fecha_cirugia, $horas_ocupadas, $id_quirofano)
     {
         $request = Yii::$app->request;
-        $model = $this->findModel($fecha_cirugia, $horas_ocupadas, $id_quirofano);       
+        $model = $this->findModel($fecha_cirugia, $horas_ocupadas, $id_quirofano);
 
         if($request->isAjax){
             /*
@@ -163,7 +148,7 @@ class WiewHorasOcupadasController extends Controller
                     ]),
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                                 Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-                ];         
+                ];
             }else if($model->load($request->post()) && $model->save()){
                 return [
                     'forceReload'=>'#crud-datatable-pjax',
@@ -173,7 +158,7 @@ class WiewHorasOcupadasController extends Controller
                     ]),
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                             Html::a('Edit',['update','fecha_cirugia, $horas_ocupadas, $id_quirofano'=>$fecha_cirugia, $horas_ocupadas, $id_quirofano],['class'=>'btn btn-primary','role'=>'modal-remote'])
-                ];    
+                ];
             }else{
                  return [
                     'title'=> "Update WiewHorasOcupadas #".$fecha_cirugia, $horas_ocupadas, $id_quirofano,
@@ -182,7 +167,7 @@ class WiewHorasOcupadasController extends Controller
                     ]),
                     'footer'=> Html::button('Close',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"]).
                                 Html::button('Save',['class'=>'btn btn-primary','type'=>"submit"])
-                ];        
+                ];
             }
         }else{
             /*
@@ -238,7 +223,7 @@ class WiewHorasOcupadasController extends Controller
      * @return mixed
      */
     public function actionBulkDelete()
-    {        
+    {
         $request = Yii::$app->request;
         $pks = explode(',', $request->post( 'pks' )); // Array or selected records primary keys
         foreach ( $pks as $pk ) {
@@ -258,7 +243,7 @@ class WiewHorasOcupadasController extends Controller
             */
             return $this->redirect(['index']);
         }
-       
+
     }
 
     /**

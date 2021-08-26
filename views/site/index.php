@@ -118,31 +118,44 @@ $this->title = 'Inicio';
       </div>
     </a>
   <? }  else {  ?>
-      <a href=<?=Yii::$app->homeUrl."?r=biopsia"; ?>>
-      <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
-        <div class="tile-stats">
-          <div class="icon"> <?  echo Icon::show('microscope', ['class'=>'fa-2x', 'framework' => Icon::WHHG]); ?>
 
+        <a href=<?=Yii::$app->homeUrl."?r=cirugiaprogramada/calendario"; ?>>
+        <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+          <div class="tile-stats">
+              <div class="icon"><i class="icon-calendarthree"></i>
+              </div>
+              <div class="count">2</div>
+              <h3>CALENDARIO</h3>
+              <p>Información de las plantillas - ABM.</p>
           </div>
-          <div class="count"><?=$cantidadBiopsias ?></div>
-
-          <h3>BIOPSIAS</h3>
-          <p>Información de las biopsias - ABM.</p>
         </div>
-      </div>
-      </a>
-      <a href=<?=Yii::$app->homeUrl."?r=pap"; ?>>
-      <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
-        <div class="tile-stats">
-          <div class="icon"><i class="fa fa-flask"></i>
+        </a>
+        <a href=<?=Yii::$app->homeUrl."?r=cirugiaprogramada"; ?>>
+          <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="tile-stats">
+              <div class="icon"><i class="fa fa-location-arrow"></i>
+              </div>
+              <div class="count">3</div>
+
+              <h3>CIR. PROGRAMADA</h3>
+              <p>Permisos-cambio de clave-roles.</p>
+            </div>
           </div>
-          <div class="count"><?=$cantidadPaps ?></div>
+        </a>
+          <a href=<?=Yii::$app->homeUrl."?r=paciente"; ?>>
+          <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
+            <div class="tile-stats">
+              <div class="icon"><i class="fa fa-group"></i>
+              </div>
+              <div class="count"><?=$cantidadPacientes ?></div>
 
-          <h3>PAPS</h3>
-          <p>Información de los paps - ABM..</p>
-        </div>
-      </div>
-      </a>
+              <h3>PACIENTES </h3>
+              <p>Información de los pacientes - ABM.</p>
+            </div>
+          </div>
+          </a>
+        </br>
+        </br>
   <?  }  ?>
     </div>
   </div>
