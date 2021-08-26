@@ -185,7 +185,8 @@ class CirugiaprogramadaController extends Controller
 
 
 
-     public function validar($dia, $model){
+     public function validar($dia, $model, $accion){
+       // Primero validar si tiene medico asociado
        $tieneMedico= Medico::find()->where(['id_usuario' => Yii::$app->user->identity->id ])->count();
          if ($tieneMedico == 0){
            Yii::$app->getSession()->setFlash('warning', [
@@ -199,8 +200,27 @@ class CirugiaprogramadaController extends Controller
            ]);
            return false;
          }
+
+         //Validar que el medico que quiere modificar es el mismo que esta accediendo
+
+         if ( $accion=="update"  && $model->medico->id_usuario !== Yii::$app->user->identity->id ){
+           Yii::$app->getSession()->setFlash('warning', [
+               'type' => 'danger',
+               'duration' => 5000,
+               'icon' => 'fa fa-warning',
+               'message' => 'LA CIRUGIA PERTENECE A OTRO MEDICO.',
+               'title' => 'NOTIFICACIÓN',
+               'positonY' => 'top',
+               'positonX' => 'right'
+           ]);
+           return false;
+         }
+         // SOLO PARA EL CREATE validar que el dia tiene que ser mayor al actualiza
+         //Se deja a lo ultimo este metodo es usado tambien por el updateParametros
+         // y en el mismo no hay restriccion  sobre el dia
+
          $fechahoy=date('Y-m-d');
-         if($fechahoy>=$dia ){
+         if($accion=="create"  && $fechahoy>=$dia ){
            Yii::$app->getSession()->setFlash('warning', [
                'type' => 'danger',
                'duration' => 5000,
@@ -243,7 +263,7 @@ class CirugiaprogramadaController extends Controller
 
         $model = new Cirugiaprogramada();
 
-        if(!$this->validar($dia,  $model->load($this->request->post()))){
+        if(!$this->validar($dia,  $model->load($this->request->post()),"create")){
           return $this->redirect(["cirugiaprogramada/fecha", "dia"=>$dia ]);
         }
 
@@ -358,6 +378,9 @@ class CirugiaprogramadaController extends Controller
             return $this->redirect(['view', 'id' => $model->id]);
         }
         $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
+        if(!$this->validar(null,  $model, "update")){
+          return $this->redirect(["index"]);
+        }
         $list = $this->listadequipos($model->fecha_cirugia,$model->medico,"update") ;
 
         return $this->render('_form', [
