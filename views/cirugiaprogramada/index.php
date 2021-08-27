@@ -6,7 +6,7 @@ use kartik\grid\GridView;
 // use johnitvn\ajaxcrud\CrudAsset;
 use quidu\ajaxcrud\CrudAsset;
 use johnitvn\ajaxcrud\BulkButtonWidget;
-
+use yii\bootstrap\Collapse;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CirugiaprogramadaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -15,7 +15,16 @@ $this->title = 'Cirugiaprogramadas';
 $this->params['breadcrumbs'][] = $this->title;
 
 CrudAsset::register($this);
+echo Collapse::widget([
 
+   'items' => [
+       [
+         'collapseIcon' => '<i class="glyphicon glyphicon-search"></i>',     'label' => 'Buscar por rango de fecha',
+           'content' => $this->render('_search', ['model' => $searchModel]) ,
+       ],
+
+   ]
+]);
 ?>
 <div id="w0Audi" class="x_panel">
   <div class="x_title"><h2><i class="fa fa-table"></i> CIRUGIAS PROGRAMADAS  </h2>

@@ -24,7 +24,10 @@ class CirugiaprogramadaSearch extends Cirugiaprogramada
     {
         return [
             [['id', 'id_paciente', 'id_medico',  'id_anestesia',  'id_quirofano','id_estado'], 'integer'],
-            [['fecha_programada', 'hora_inicio','procedimiento', 'ayudantes', 'lado', 'fecha_cirugia', 'observacion', 'diagnostico', 'material_protesis','cant_tiempo', 'otro_equpo','paciente','medico'], 'safe'],
+            [['fecha_desde','fecha_hasta','fecha_programada', 'hora_inicio','procedimiento', 'ayudantes', 'lado', 'fecha_cirugia', 'observacion', 'diagnostico', 'material_protesis','cant_tiempo', 'otro_equpo','paciente','medico'], 'safe'],
+            ['fecha_programada', 'date', 'format' => 'dd/MM/yyyy'],
+            ['fecha_cirugia', 'date', 'format' => 'dd/MM/yyyy'],
+
         ];
     }
 
@@ -99,7 +102,8 @@ class CirugiaprogramadaSearch extends Cirugiaprogramada
             ->andFilterWhere(['like', 'diagnostico', $this->diagnostico])
             ->andFilterWhere(['like', 'material_protesis', $this->material_protesis])
             ->andFilterWhere(['like', 'otro_equpo', $this->otro_equpo]);
-
+        $query->andFilterWhere(['>=', 'fecha_cirugia', $this->fecha_desde]);
+        $query->andFilterWhere(['<=', 'fecha_cirugia', $this->fecha_hasta]);
         return $dataProvider;
     }
 

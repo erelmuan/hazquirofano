@@ -3,9 +3,19 @@
 namespace app\models;
 use Yii;
 use app\models\Usuario;
+use app\components\behaviors\AuditoriaBehaviors;
 
 class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
 {
+  public function behaviors()
+    {
+
+    return array(
+           'AuditoriaBehaviors'=>array(
+                  'class'=>AuditoriaBehaviors::className(),
+                  ),
+      );
+    }
     public $id_user;
     public $username;
     public $nombre;

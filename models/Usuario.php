@@ -2,6 +2,7 @@
 
 namespace app\models;
 use yii\helpers\ArrayHelper;
+use app\components\behaviors\AuditoriaBehaviors;
 
 use Yii;
 
@@ -21,12 +22,21 @@ use Yii;
  * @property Auditoria[] $auditorias
  * @property Pantalla $pantalla
  * @property Usuariorol[] $usuariorols
- * @property Vista[] $vistas 
+ * @property Vista[] $vistas
  */
  use yii\filters\AccessControl;
 
 class Usuario extends \yii\db\ActiveRecord
 {
+  public function behaviors()
+    {
+
+    return array(
+           'AuditoriaBehaviors'=>array(
+                  'class'=>AuditoriaBehaviors::className(),
+                  ),
+      );
+    }
     /**
      * {@inheritdoc}
      */

@@ -1,10 +1,11 @@
+
 <?php
 
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-
+use kartik\widgets\DatePicker;
 /* @var $this yii\web\View */
-/* @var $model app\models\CirugiaprogramadaSearch */
+/* @var $model app\models\BiopsiaSearch */
 /* @var $form yii\widgets\ActiveForm */
 ?>
 
@@ -13,38 +14,37 @@ use yii\widgets\ActiveForm;
     <?php $form = ActiveForm::begin([
         'action' => ['index'],
         'method' => 'get',
+        // 'options' => [
+        //     'data-pjax' => 1
+        // ],
     ]); ?>
 
-    <?= $form->field($model, 'id') ?>
+    <?
+    echo $form->field($model, 'fecha_desde')->widget(DatePicker::classname(), [
+        'options' => ['placeholder' => ''],
+        'pluginOptions' => [
+            'id' => 'fecha1',
+            'autoclose'=>true,
+            'format' => 'dd/mm/yyyy',
+            'startView' => 'year',
+        ]
+    ]);
 
-    <?= $form->field($model, 'id_paciente') ?>
+    echo $form->field($model, 'fecha_hasta')->widget(DatePicker::classname(), [
+        'options' => ['placeholder' => ''],
+        'pluginOptions' => [
+            'id' => 'fecha1',
+            'autoclose'=>true,
+            'format' => 'dd/mm/yyyy',
+            'startView' => 'year',
+        ]
+    ]);
 
-    <?= $form->field($model, 'id_medico') ?>
+    ?>
 
-    <?= $form->field($model, 'id_procedimiento') ?>
 
-    <?= $form->field($model, 'id_anestesia') ?>
-
-    <?php // echo $form->field($model, 'fecha') ?>
-
-    <?php // echo $form->field($model, 'id_diagnostico') ?>
-
-    <?php // echo $form->field($model, 'hora_inicio') ?>
-
-    <?php // echo $form->field($model, 'id_cant_hora') ?>
-
-    <?php // echo $form->field($model, 'ayudantes') ?>
-
-    <?php // echo $form->field($model, 'id_equipo') ?>
-
-    <?php // echo $form->field($model, 'lado') ?>
-
-    <?php // echo $form->field($model, 'id_observacion') ?>
-
-    <div class="form-group">
-        <?= Html::submitButton('Search', ['class' => 'btn btn-primary']) ?>
-        <?= Html::resetButton('Reset', ['class' => 'btn btn-outline-secondary']) ?>
-    </div>
+        <?= Html::submitButton('Buscar', ['class' => 'btn btn-primary']) ?>
+        <?= Html::resetButton('Limpiar', ['class' => 'btn btn-default']) ?>
 
     <?php ActiveForm::end(); ?>
 

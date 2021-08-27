@@ -65,11 +65,16 @@ return [
         'label'=> 'Procedimiento'
       ],
       [
-          //nombre
-        'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'anestesia.descripcion',
-        'label'=> 'Anestesia'
-      ],
+        'attribute' => 'id_anestesia',
+        'label' => 'Anestesia',
+        'value' => 'anestesia.descripcion',
+        'filter'=>$searchModel->getAnestesias(),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'options' => ['prompt' => ''],
+            'pluginOptions' => ['allowClear' => true],
+        ],
+    ],
       [
           'class'=>'\kartik\grid\DataColumn',
           'attribute'=>'fecha_cirugia',
@@ -88,14 +93,15 @@ return [
         // 'class'=>'\kartik\grid\DataColumn',
         // 'attribute'=>'ayudantes',
     // ],
-    // [
-        // 'class'=>'\kartik\grid\DataColumn',
-        // 'attribute'=>'lado',
-    // ],
-    // [
-        // 'class'=>'\kartik\grid\DataColumn',
-        // 'attribute'=>'fecha_cirugia',
-    // ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'lado',
+    ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'fecha_cirugia',
+        'format' => ['date', 'd/M/Y'],
+    ],
     // [
         // 'class'=>'\kartik\grid\DataColumn',
         // 'attribute'=>'observacion',

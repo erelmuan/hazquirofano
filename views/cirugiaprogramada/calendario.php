@@ -86,6 +86,15 @@ background: #E6FDBD;
 
 
   <div class="row">
+    <div class="col-md-12">
+<h4>Información de los colores</h4>
+<p>
+  <span class="badge badge-primary" style="background-color: #498e47; font-size: 16px;">Alta disponibilidad</span>
+  <span class="badge badge-secondary" style="background-color: #aeb316; font-size: 16px;">Baja disponibilidad</span>
+  <span class="badge badge-success"style="background-color: #d51d1d; font-size: 16px;">Sin disponibilidad</span>
+  <span class="badge badge-danger"style="background-color: #114bf9;font-size: 16px;">Dias sin atención</span>
+</p>
+</div>
 
 <?
   $this->title = Yii::t('app', 'Calendario');

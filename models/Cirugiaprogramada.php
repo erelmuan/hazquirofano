@@ -119,8 +119,10 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
     {
         return $this->hasOne(Anestesia::className(), ['id' => 'id_anestesia']);
     }
-
-
+    public function getAnestesias()
+    {
+      return ArrayHelper::map(Anestesia::find()->all(), 'id','descripcion');
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -148,10 +150,7 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
     {
         return $this->hasMany(ObservacionCirugia::className(), ['id_cirugiaprogramada' => 'id']);
     }
-    public function getAnestesias()
-    {
-      return ArrayHelper::map(Anestesia::find()->all(), 'id','descripcion');
-    }
+
 
 
     public function getCantTiempo()

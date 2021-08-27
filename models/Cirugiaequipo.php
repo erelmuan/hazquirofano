@@ -17,6 +17,7 @@ use app\components\behaviors\AuditoriaBehaviors;
  */
 class Cirugiaequipo extends \yii\db\ActiveRecord
 {
+  // SE DEBE CAMBIAR ESTE COMPORTAMIENTO!!!! PARA CON UAN AUDITORIA BEHAVIORS
   public function behaviors()
     {
 
