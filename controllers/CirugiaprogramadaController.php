@@ -157,11 +157,11 @@ class CirugiaprogramadaController extends Controller
        return $this->sumarHoras([$parametrizacion->hora_inicio,$sumTiempo]);
 
      }
-     public function listadequipos($dia,$medico,  $accion){
+     public function listadequipos($dia,$id_cirugia,  $accion){
        // $modelParametrizacion = new Parametrizacion();
        // $parametrizacion=$modelParametrizacion::find()
        // ->select(['hora_inicio'])->one();
-       if ($accion="create"){
+       if ($accion=="create"){
         $arrayEquipos= Equipo::find()->where('activo = true')->all();
           $list= ArrayHelper::map($arrayEquipos, 'id', 'descripcion');
              foreach ($arrayEquipos as $equipo) {
@@ -171,7 +171,7 @@ class CirugiaprogramadaController extends Controller
                    ->where(['and','cirugiaequipo.id_equipo = '.$equipo->id ])
                    //El numero 12 se debe parametrizar de acuerdo a fecha impuesta por cada equipo
                    // ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= 30 and id_medico <>".$medico->id ])->count();
-                   ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= ".$equipo->dias])->count();
+                   ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= ".$equipo->dias." and ( date '".$dia."' -  fecha_cirugia ) >= -".$equipo->dias])->count();
 
                    if ($usado>0){
                      $list[$equipo->id]=$equipo->descripcion." (No disponible)";
@@ -179,6 +179,24 @@ class CirugiaprogramadaController extends Controller
              }
            }
         }
+        if ($accion=="update"){
+         $arrayEquipos= Equipo::find()->where('activo = true')->all();
+           $list= ArrayHelper::map($arrayEquipos, 'id', 'descripcion');
+              foreach ($arrayEquipos as $equipo) {
+                if ($equipo->dias !=0){
+                    $usado = Cirugiaequipo::find()
+                    ->leftJoin('cirugiaprogramada', 'cirugiaprogramada.id = cirugiaequipo.id_cirugiaprogramada')
+                    ->where(['and','cirugiaequipo.id_equipo = '.$equipo->id ])
+                    //El numero 12 se debe parametrizar de acuerdo a fecha impuesta por cada equipo
+                    // ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= 30 and id_medico <>".$medico->id ])->count();
+                    ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= ".$equipo->dias." and ( date '".$dia."' -  fecha_cirugia ) >= -".$equipo->dias." and id_cirugiaprogramada <> ".$id_cirugia ])->count();
+
+                    if ($usado>0){
+                      $list[$equipo->id]=$equipo->descripcion." (No disponible)";
+                    }
+              }
+            }
+         }
            return $list;
    }
 
@@ -257,10 +275,9 @@ class CirugiaprogramadaController extends Controller
       $quirofano=Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->one();
       $tiempo_default= $this->cantidadTiempo($dia,$quirofano->id);
 
-      $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
 
-      $list = $this->listadequipos($dia,$medico,"create") ;
-
+      $list = $this->listadequipos($dia,null,"create") ;
+        $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
         $model = new Cirugiaprogramada();
 
         if(!$this->validar($dia,  $model->load($this->request->post()),"create")){
@@ -331,8 +348,6 @@ class CirugiaprogramadaController extends Controller
                 $modelobservacion_cirugia->save();
 
                  }
-              $historia_rang= new HistorialRangoHorario();
-              $parametrizacion= new Parametrizacion();
 
               // $historia_rang
               return $this->redirect(['view', 'id' => $model->id]);
@@ -375,13 +390,32 @@ class CirugiaprogramadaController extends Controller
         $dataProviderPac = $searchModelPac->search(Yii::$app->request->queryParams);
         $dataProviderPac->pagination->pageSize=7;
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+          (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
+          (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
+
+          Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
+            //Esto se tiene que hacer una vez
+        foreach ($cirugiaequipos as $key => $id_equipo) {
+            $modelCirugiaEquipo = new Cirugiaequipo();
+            $modelCirugiaEquipo->id_cirugiaprogramada=$model->id;
+            $modelCirugiaEquipo->id_equipo=$id_equipo;
+            $modelCirugiaEquipo->save();
+          }
+          ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
+          foreach ($obsquir as $key => $id_obsquir) {
+            $modelobservacion_cirugia = new ObservacionCirugia();
+            $modelobservacion_cirugia->id_cirugiaprogramada=$model->id;
+            $modelobservacion_cirugia->id_observacionquirurgica=$id_obsquir;
+            $modelobservacion_cirugia->save();
+
+             }
             return $this->redirect(['view', 'id' => $model->id]);
         }
         $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
         if(!$this->validar(null,  $model, "update")){
           return $this->redirect(["index"]);
         }
-        $list = $this->listadequipos($model->fecha_cirugia,$model->medico,"update") ;
+        $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
 
         return $this->render('_form', [
             'model' => $model,
@@ -469,18 +503,6 @@ class CirugiaprogramadaController extends Controller
 
           $cirugias= Cirugiaprogramada::find()->select("fecha_cirugia")->distinct()
           ->andWhere(["and","fecha_cirugia >= (current_date::date - interval '60 day') and id_estado !=2 and id_estado !=3 "])->all();
-          // $tasks = [];
-          // foreach ($events as $eve) {
-          //   $event= new \yii2fullcalendar\models\Event();
-          //   $event->id=$eve->id;
-          //   $event->title=$eve->quirofano->nombre;
-          //   $event->start=date("Y-m-d H:i:s", strtotime($eve->fecha_cirugia.' '.$eve->hora_inicio));
-          //   // $event->start=date("Y-m-d H:i:s", strtotime('2021-06-28 07:00'));
-          //   // $event->end= date("Y-m-d H:i:s", strtotime('2021-06-28 10:00'));
-          //   $event->url='index.php?r=cirugiaprogramada/fecha&dia='.$eve->fecha_cirugia;
-          //   $event->color= "grey";
-          //   $tasks[]=$event;
-          // }
           //NO TIENE QUE SER ANULADA ID 2 NI REPROGRAMADA ID REPROGRAMADA
           $quirofanos= Quirofano::find()->all();
           $tasks = [];
@@ -489,8 +511,6 @@ class CirugiaprogramadaController extends Controller
               $event= new \yii2fullcalendar\models\Event();
                 $event->id= $quirofano->id;
                 $fecha=date("Y-m-d", strtotime($cirugia->fecha_cirugia));
-
-
                     $valor=$this->porcentaje($quirofano->id,$fecha);
                     if(trim($valor)==='100'){
                       $event->color= "red";
@@ -507,7 +527,10 @@ class CirugiaprogramadaController extends Controller
 
                 $event->start=$fecha;
                 $event->url='index.php?r=cirugiaprogramada/fecha&dia='.$fecha;
-                $tasks[]=$event;
+                if ($valor!='0'){
+                    $tasks[]=$event;
+                }
+
             }
         }
         //Entra si el quirofano tiene una cirugia programada

@@ -4,7 +4,7 @@ namespace app\models;
 use yii\helpers\ArrayHelper;
 
 use Yii;
-
+ use app\components\behaviors\AuditoriaBehaviors;
 /**
  * This is the model class for table "cirugiaprogramada".
  *
@@ -36,8 +36,20 @@ use Yii;
  * @property ObservacionCirugia[] $observacionCirugias
  * @property Estado $estado
  */
+
 class Cirugiaprogramada extends \yii\db\ActiveRecord
 {
+
+  public function behaviors()
+    {
+
+    return array(
+           'AuditoriaBehaviors'=>array(
+                  'class'=>AuditoriaBehaviors::className(),
+                  ),
+      );
+    }
+
 
     /**
      * {@inheritdoc}

@@ -66,7 +66,7 @@ class CirugiaprogramadaSearch extends Cirugiaprogramada
         }
 
         $query->andFilterWhere([
-            'id' => $this->id,
+            'cirugiaprogramada.id' => $this->id,
             'procedimiento' => $this->procedimiento,
             'id_anestesia' => $this->id_anestesia,
             'fecha_programada' => $this->fecha_programada,

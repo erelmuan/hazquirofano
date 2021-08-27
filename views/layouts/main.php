@@ -8,16 +8,13 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use kartik\widgets\Alert;
-use kartik\widgets\AlertBlock;
 use kartik\widgets\Growl;
-// use kartik\icons\Icon;
-// use kartik\widgets\SwitchInput;
+use kartik\icons\Icon;
+use kartik\widgets\SwitchInput;
 
 // Icon::map($this, Icon::WHHG);
-use kartik\icons\Icon;
-Icon::map($this, Icon::WHHG);
 $bundle = yiister\gentelella\assets\Asset::register($this);
-app\assets\AppAsset::register($this);
+// app\assets\AppAsset::register($this);
 
 ?>
 <?php $this->beginPage(); ?>

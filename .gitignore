@@ -18,7 +18,8 @@ Thumbs.db
 vendor.ziṕ
 # composer itself is not needed
 composer.phar
-
+# carpeta de imagenes
+/web/uploads
 # Mac DS_Store Files
 .DS_Store
 

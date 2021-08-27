@@ -65,7 +65,8 @@ CrudAsset::register($this);
 
       </div>
       <div class='col-sm-3'>
-        <?=$form->field($model, 'fecha_programada')->input("date",['readonly' => true ,'value' => date("Y-m-d")])->label('Fecha  programada');  ?>
+
+        <?=$form->field($model, 'fecha_programada')->input("date",['readonly' => true ,'value' => ($model->fecha_programada)?date('Y-m-d',strtotime($model->fecha_programada)):date('Y-m-d')])->label('Fecha  programada');  ?>
 
       <label> Medico </label> </br>
       <input class="form-control" id="cirugia-medico" style="width:250px;" value='<?=$medico->apellido.' '.$medico->nombre ?>' type="text" readonly>

@@ -17,7 +17,6 @@ use yii\helpers\Html;
 class LocalidadController extends Controller
 {
   
-
     /**
      * Lists all Localidad models.
      * @return mixed

@@ -2,8 +2,7 @@
 use yii\bootstrap\ActiveForm;
 use yii\helpers\Html;
 use yii\bootstrap\Modal;
-// use johnitvn\ajaxcrud\CrudAsset;
-use quidu\ajaxcrud\CrudAsset;
+use johnitvn\ajaxcrud\CrudAsset;
 use kartik\widgets\FileInput;
 
 $this->title = 'Perfil';
