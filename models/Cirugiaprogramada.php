@@ -28,7 +28,7 @@ use Yii;
 
  * @property Cirugiaequipo[] $cirugiaequipos
  * @property Anestesia $anestesia
- * @property Horas $cantHora
+ * @property WiewIntervaloTiempo $cant_tiempo
  * @property Medico $medico
  * @property Paciente $paciente
  * @property Procedimiento $procedimiento
@@ -156,7 +156,7 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
 
     public function getCantTiempo()
     {
-      return ArrayHelper::map(Horas::find()->all(), 'numero','numero');
+      return ArrayHelper::map(WiewIntervaloTiempo::find()->all(), 'tiempo','tiempo');
     }
     /**
    * @return \yii\db\ActiveQuery
