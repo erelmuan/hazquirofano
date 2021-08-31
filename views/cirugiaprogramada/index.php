@@ -7,6 +7,7 @@ use kartik\grid\GridView;
 use quidu\ajaxcrud\CrudAsset;
 use johnitvn\ajaxcrud\BulkButtonWidget;
 use yii\bootstrap\Collapse;
+use kartik\export\ExportMenu;
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\CirugiaprogramadaSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -25,12 +26,28 @@ echo Collapse::widget([
 
    ]
 ]);
+$export= ExportMenu::widget([
+  'exportConfig' => [
+    ExportMenu::FORMAT_TEXT => false,
+    ExportMenu::FORMAT_HTML => false,
+],
+         'dataProvider' => $dataProvider,
+         'columns' => require(__DIR__.'/_columnsSeleccion.php'),
+         'dropdownOptions' => [
+           'label' => 'Todo',
+           'class' => 'btn btn-secondary',
+           'itemsBefore' => [
+             '<div class="dropdown-header">Exportar Todos los Datos</div>',
+],
+     ]]);
+
 ?>
 <div id="w0Audi" class="x_panel">
   <div class="x_title"><h2><i class="fa fa-table"></i> CIRUGIAS PROGRAMADAS  </h2>
     <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/site/administracion'], ['class'=>'btn btn-danger grid-button']) ?></div>
 </div>
   </div>
+  <?=$export; ?>
 <div class="cirugiaprogramada-index">
     <div id="ajaxCrudDatatable">
         <?=GridView::widget([
@@ -43,8 +60,7 @@ echo Collapse::widget([
               ['content'=>
                   Html::button('<i class="glyphicon glyphicon-search"></i>', ['Buscar' ,'title'=> 'Buscar','class'=>'btn btn-default']).
                   Html::a('<i class="glyphicon glyphicon-repeat"></i>', [''],
-                  ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar']).
-                  '{export}'
+                  ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar'])
               ],
             ],
             'striped' => true,

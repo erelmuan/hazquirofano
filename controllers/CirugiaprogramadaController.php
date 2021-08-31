@@ -86,6 +86,7 @@ class CirugiaprogramadaController extends Controller
           Yii::$app->response->format = Response::FORMAT_JSON;
           return [
                   'title'=> "Cirugia Programada #".$id,
+                  // 'content'=>$this->renderAjax('vieww', [
                   'content'=>$this->renderAjax('vieww', [
                       'model' => $this->findModel($id),
                   ]),
@@ -596,7 +597,42 @@ class CirugiaprogramadaController extends Controller
     public function actionBuscar(){
           $searchModel = new CirugiaprogramadaSearch();
           $dataProvider = $searchModel->searchdispo($this->request->queryParams);
-
-
         }
+        //la fecha tiene que estar en formato d-m-y
+        function calcular_edad($id){
+
+          $Solicitud =  Solicitud::findOne($id);
+          list($ano,$mes,$dia) = explode("-",$Solicitud->paciente->fecha_nacimiento);
+          list($anoR,$mesR,$diaR) = explode("-",$Solicitud->fecharealizacion);
+
+
+          $ano_diferencia  = $anoR - $ano;
+          $mes_diferencia = $mesR - $mes;
+          $dia_diferencia   = $diaR - $dia;
+          if ( $mes_diferencia < 0)
+          {
+            $ano_diferencia--;
+          }
+          elseif ( $mes_diferencia == 0){
+            if ( $dia_diferencia < 0)
+                $ano_diferencia--;
+            }
+            return $ano_diferencia;
+          }
+
+
+   public function actionInforme($id) {
+
+          $request = Yii::$app->request;
+          if($request->isAjax){
+            $cirugia_programada=$this->findModel($id);
+            return $this->render('pdfcirugia',['model' => $cirugia_programada, 'edad'=>4]); //$this->calcular_edad($biopsia->id_solicitudbiopsia) ]);
+            }else {
+              $cirugia_programada=$this->findModel($id);
+              return $this->render('pdfcirugia',['model' => $cirugia_programada, 'edad'=>4]); //$this->calcular_edad($biopsia->id_solicitudbiopsia) ]);
+            }
+
+      }
+
+
 }
