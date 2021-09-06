@@ -165,13 +165,13 @@ class Usuario extends \yii\db\ActiveRecord
 		       return $this->hasOne(Medico::className(), ['id_usuario' => 'id']);
 		   }
 
-       public function isPatologo() {
+       public function isCargador() {
          $id= Yii::$app->user->identity->id;
-         $rol_patologo = Usuariorol::find()
+         $rol_cargador = Usuariorol::find()
           //el id_rol 4 es del patologo
           ->where(['and', "usuariorol.id_usuario=".$id ,"usuariorol.id_rol=4"])
           ->count('*');
-          if ($rol_patologo >0){
+          if ($rol_cargador >0){
             return true;
           }
           else {

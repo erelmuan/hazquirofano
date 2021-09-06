@@ -7,7 +7,7 @@ use app\models\CirugiaprogramadaSearch;
 use app\models\WiewQuirofanosDisponiblesSearch;
 use app\models\WiewHorasOcupadas;
 use app\models\DiasSinCirugia;
-
+use app\models\Usuario;
 
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -204,10 +204,10 @@ class CirugiaprogramadaController extends Controller
 
 
 
-     public function validar($dia, $model, $accion){
+     public function validar($dia, $model, $accion,$cargador){
        // Primero validar si tiene medico asociado
        $tieneMedico= Medico::find()->where(['id_usuario' => Yii::$app->user->identity->id ])->count();
-         if ($tieneMedico == 0){
+         if ($tieneMedico == 0 && !$cargador){
            Yii::$app->getSession()->setFlash('warning', [
                'type' => 'danger',
                'duration' => 5000,
@@ -222,7 +222,7 @@ class CirugiaprogramadaController extends Controller
 
          //Validar que el medico que quiere modificar es el mismo que esta accediendo
 
-         if ( $accion=="update"  && $model->medico->id_usuario !== Yii::$app->user->identity->id ){
+         if ( $accion=="update"  && $model->medico->id_usuario !== Yii::$app->user->identity->id && !$cargador){
            Yii::$app->getSession()->setFlash('warning', [
                'type' => 'danger',
                'duration' => 5000,
@@ -265,12 +265,19 @@ class CirugiaprogramadaController extends Controller
 
     public function actionCreate($dia)
     {
+      //Verifico si es cargador de cir programadas sin ser medico
+      $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
+      $cargador= $usuario->isCargador();
       ////////////PACIENTE/////////////////
       $modelPac= new Paciente();
       $searchModelPac = new PacienteSearch();
       $dataProviderPac = $searchModelPac->search(Yii::$app->request->queryParams);
       $dataProviderPac->pagination->pageSize=7;
       ////////////MEDICO/////////////////
+      $modelMed= new Medico();
+      $searchModelMed = new MedicoSearch();
+      $dataProviderMed = $searchModelMed->search(Yii::$app->request->queryParams);
+      $dataProviderMed->pagination->pageSize=7;
       //El horario por defecto esta asociado al quirofano A
       //El primer quirofano disponible que encuentre
       $quirofano=Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->one();
@@ -281,7 +288,7 @@ class CirugiaprogramadaController extends Controller
         $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
         $model = new Cirugiaprogramada();
 
-        if(!$this->validar($dia,  $model->load($this->request->post()),"create")){
+        if(!$this->validar($dia,  $model->load($this->request->post()),"create",$cargador)){
           return $this->redirect(["cirugiaprogramada/fecha", "dia"=>$dia ]);
         }
 
@@ -360,6 +367,23 @@ class CirugiaprogramadaController extends Controller
             $model->loadDefaultValues();
         }
 
+        if($cargador ){
+
+          return $this->render('_cargador', [
+              'model' => $model,
+              'searchModelPac' => $searchModelPac,
+              'dataProviderPac' => $dataProviderPac,
+              'searchModelMed' => $searchModelMed,
+              'dataProviderMed' => $dataProviderMed,
+              'modelMed' => $modelMed,
+              'modelPac' => $modelPac,
+              'dia'=>$dia,
+              'medico'=>null,
+              'tiempo' => $tiempo_default,
+              'list'=> $list
+          ]);
+
+        }
         return $this->render('create', [
             'model' => $model,
             'searchModelPac' => $searchModelPac,
@@ -367,7 +391,7 @@ class CirugiaprogramadaController extends Controller
              'modelPac' => $modelPac,
             'dia'=>$dia,
             'medico'=>$medico,
-          'tiempo' => $tiempo_default,
+            'tiempo' => $tiempo_default,
             'list'=> $list
         ]);
     }
@@ -382,14 +406,21 @@ class CirugiaprogramadaController extends Controller
      * @return mixed
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id){
+      //Verifico si es cargador de cir programadas sin ser medico
+      $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
+      $cargador= $usuario->isCargador();
         $model = $this->findModel($id);
         ////////////PACIENTE/////////////////
         $modelPac= new Paciente();
         $searchModelPac = new PacienteSearch();
         $dataProviderPac = $searchModelPac->search(Yii::$app->request->queryParams);
         $dataProviderPac->pagination->pageSize=7;
+        ////////////MEDICO/////////////////
+        $modelMed= new Medico();
+        $searchModelMed = new MedicoSearch();
+        $dataProviderMed = $searchModelMed->search(Yii::$app->request->queryParams);
+        $dataProviderMed->pagination->pageSize=7;
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
           (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
           (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
@@ -412,12 +443,28 @@ class CirugiaprogramadaController extends Controller
              }
             return $this->redirect(['view', 'id' => $model->id]);
         }
-        $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
-        if(!$this->validar(null,  $model, "update")){
+        // $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
+        if(!$this->validar(null,  $model, "update",$cargador)){
           return $this->redirect(["index"]);
         }
         $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
+        if($cargador ){
 
+          return $this->render('_cargador', [
+              'model' => $model,
+              'searchModelPac' => $searchModelPac,
+              'dataProviderPac' => $dataProviderPac,
+              'searchModelMed' => $searchModelMed,
+              'dataProviderMed' => $dataProviderMed,
+              'modelMed' => $modelMed,
+              'modelPac' => $modelPac,
+              'medico' => $model->medico,
+              'dia'=>$model->fecha_cirugia,
+              'tiempo' => $model->hora_inicio,
+              'list'=> $list
+          ]);
+
+        }
         return $this->render('_form', [
             'model' => $model,
             'searchModelPac' => $searchModelPac,

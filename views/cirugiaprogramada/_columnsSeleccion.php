@@ -16,10 +16,8 @@ use app\models\Equipo;
 
         'width' => '170px',
         //creo que no hacer falta ni key ni indez tampoco widget
-        'value' => function($dataProvider, $key, $index, $widget) {
-            $key = str_replace("[","",$key);
-            $key = str_replace("]","",$key);
-          return Html::a( $dataProvider->paciente->nombre .' '.$dataProvider->paciente->apellido,['paciente/view',"id"=> $dataProvider->paciente->id]
+        'value' => function($model) {
+          return Html::a( $model->paciente->nombre .' '.$model->paciente->apellido,['paciente/view',"id"=> $model->paciente->id]
 
             ,[    'class' => 'text-success','role'=>'modal-remote','title'=>'Datos del paciente','data-toggle'=>'tooltip']
            );
@@ -37,11 +35,8 @@ use app\models\Equipo;
         'label'=> 'Medico',
         'attribute'=>'medico',
         'width' => '170px',
-        'value' => function($dataProvider, $key, $index, $widget) {
-            $key = str_replace("[","",$key);
-            $key = str_replace("]","",$key);
-            //var_dump ($key);
-          return Html::a( $dataProvider->medico->nombre .' '.$dataProvider->medico->apellido,['medico/view',"id"=> $dataProvider->medico->id]
+        'value' => function($model) {
+          return Html::a( $model->medico->nombre .' '.$model->medico->apellido,['medico/view',"id"=> $model->medico->id]
             ,[    'class' => 'text-success','role'=>'modal-remote','title'=>'Datos del paciente','data-toggle'=>'tooltip']
            );
                }
@@ -91,7 +86,7 @@ use app\models\Equipo;
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'fecha_cirugia',
+        'attribute'=>'fecha_programada',
         'format' => ['date', 'd/M/Y'],
     ],
 
@@ -149,22 +144,6 @@ use app\models\Equipo;
   ],
 
   [
-      'format'    => 'html',
-      'label' => 'Equipos',
-      'value'     => function($model)
-      {
-          $items = "";
-          $cant=1;
-          foreach ($model->cirugiaequipos as $cirequipo) {
-
-              $items .="<b>".$cant.":</b>". $cirequipo->equipo->descripcion."<br>";
-              $cant++;
-          }
-          return $items;
-      }
-  ],
-
-  [
       'class'=>'\kartik\grid\DataColumn',
       'attribute'=>'otro_equpo',
   ],
@@ -193,36 +172,27 @@ use app\models\Equipo;
 
 ];
 //esto se tiene que hacer desde el controlador(invocar al modelo), despues corregir!!!
-
+function devolver(){
+  return false;
+};
 $dateColumns= Equipo::find()->all();
   // var_dump ($dataProvider);
 foreach($dateColumns  as $date){
 
-  $false=function($model)
-  {
-    return false;
-  };
-  $true=function($model)
-  {
-    return true;
-  };
-  $entro=false;
-  // var_dump ($searchModel->fecha_cirugia);
-  foreach ($searchModel->cirugiaequipos as $cirequipo) {
-        var_dump ($searchModel->cirugiaequipos);
-      if ($cirequipo->descripcion==$date->descripcion ){
-      $entro=true;
-      echo "holaaaaaaaaaaaaaaaaaaa";
-          break;
-      }
-  }
   $columns[] = [
-      'class'=>'\kartik\grid\BooleanColumn',
+      'class'=>'\kartik\grid\DataColumn',
       'label'=>$date->descripcion,
-        'attribute'=>'observacion',
-      // 'value'  =>$entro==true?$valor:$valor,
-      // 'value'  =>$entro==true?$true:$false,
-      'value'  =>$date->descripcion,
+      'format'    => 'html',
+      'value'  => function ($model)use ($date) {
+        $usado="";
+        foreach ($model->cirugiaequipos as $cirequipo) {
+            if ($cirequipo->equipo->descripcion==$date->descripcion ){
+              $usado= "Usado";
+                break;
+            }
+          }
+          return $usado;
+        },
     ];
 }
 return $columns;

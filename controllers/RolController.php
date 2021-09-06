@@ -27,7 +27,7 @@ use app\components\Metodos\Metodos;
  */
 class RolController extends Controller
 {
-  
+
 
     /**
      * Lists all Rol models.
@@ -158,7 +158,7 @@ class RolController extends Controller
             if ($model->id==4){
               return [
                   'title'=> "Actualizar Rol #".$id,
-                  'content'=>"El rol patologo no se puede actualizar",
+                  'content'=>"El rol ".$model->nombre." no se puede actualizar",
                   'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"])
               ];
             }
@@ -219,7 +219,7 @@ class RolController extends Controller
 
           return [
               'title'=> "Eliminar Rol #".$id,
-              'content'=>"El rol patologo no se puede eliminar",
+              'content'=>"El rol no se puede eliminar",
               'footer'=> Html::button('Cerrar',['class'=>'btn btn-default pull-left','data-dismiss'=>"modal"])
           ];
         }

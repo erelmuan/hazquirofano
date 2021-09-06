@@ -6,7 +6,7 @@ return [
       'class' => '\kartik\grid\ExpandRowColumn',
       'value' => function ($model) {
         //id=1 administrador
-          if ($model->id ==1){
+          if ($model->id ==1 or $model->id==4){
             return false;
             }
             else {
