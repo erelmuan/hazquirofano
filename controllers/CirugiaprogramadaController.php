@@ -251,20 +251,60 @@ class CirugiaprogramadaController extends Controller
            ]);
            return false;
          }
-
-         // $modelParametrizacion = new Parametrizacion();
-         // if ( !empty($model)){
-         //
-         //   $tiempo_default= $this->cantidadTiempo($dia,$model->id_quirofano);
-         //
-         //   $parametrizacion->hora_final;
-         // }
-
        return true;
      }
 
+     public function validarObsEquipo($datos){
+
+                 if (!isset($datos["cirugiaequipos"]) && ($datos["Cirugiaprogramada"]["otro_equpo"])=="" ){
+                   Yii::$app->getSession()->setFlash('warning', [
+                       'type' => 'danger',
+                       'duration' => 5000,
+                       'icon' => 'fa fa-warning',
+                       'message' => 'DEBE SELECCIONAR ALGÚN EQUIPO',
+                       'title' => 'NOTIFICACIÓN',
+                       'positonY' => 'top',
+                       'positonX' => 'right'
+                   ]);
+                   return false;
+                 }
+                 if (!isset($datos["observacionquirurgica"]) ){
+                   Yii::$app->getSession()->setFlash('warning', [
+                       'type' => 'danger',
+                       'duration' => 5000,
+                       'icon' => 'fa fa-warning',
+                       'message' => 'DEBE SELECCIONAR ALGUNA OBSERVACIÓN',
+                       'title' => 'NOTIFICACIÓN',
+                       'positonY' => 'top',
+                       'positonX' => 'right'
+                   ]);
+                   return false;
+
+                 }
+              return true;
+
+        }
+
+    public function cargarObservaciones($obsquir,$model){
+      foreach ($obsquir as $key => $id_obsquir) {
+        $modelobservacion_cirugia = new ObservacionCirugia();
+        $modelobservacion_cirugia->id_cirugiaprogramada=$model->id;
+        $modelobservacion_cirugia->id_observacionquirurgica=$id_obsquir;
+        $modelobservacion_cirugia->save();
+
+      }
+    }
+    public function cargarEquipos($cirugiaequipos,$model){
+      foreach ($cirugiaequipos as $key => $id_equipo) {
+        $modelCirugiaEquipo = new Cirugiaequipo();
+        $modelCirugiaEquipo->id_cirugiaprogramada=$model->id;
+        $modelCirugiaEquipo->id_equipo=$id_equipo;
+        $modelCirugiaEquipo->save();
+      }
+    }
     public function actionCreate($dia)
     {
+
       //Verifico si es cargador de cir programadas sin ser medico
       $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
       $cargador= $usuario->isCargador();
@@ -282,11 +322,9 @@ class CirugiaprogramadaController extends Controller
       //El primer quirofano disponible que encuentre
       $quirofano=Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->one();
       $tiempo_default= $this->cantidadTiempo($dia,$quirofano->id);
-
-
       $list = $this->listadequipos($dia,null,"create") ;
-        $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
-        $model = new Cirugiaprogramada();
+      $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
+      $model = new Cirugiaprogramada();
 
         if(!$this->validar($dia,  $model->load($this->request->post()),"create",$cargador)){
           return $this->redirect(["cirugiaprogramada/fecha", "dia"=>$dia ]);
@@ -296,67 +334,24 @@ class CirugiaprogramadaController extends Controller
 
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
+            if(!$this->validarObsEquipo($_POST)){
+                return $this->render('create', [
+                    'model' => $model,
+                    'searchModelPac' => $searchModelPac,
+                    'dataProviderPac' => $dataProviderPac,
+                    'modelPac' => $modelPac,
+                    'dia'=>$dia,
+                    'medico'=>$medico,
+                    'tiempo' => $tiempo_default,
+                      'list'=> $list
 
-            // $model->load($this->request->post());
-            if (!isset($_POST["cirugiaequipos"]) && ($_POST["Cirugiaprogramada"]["otro_equpo"])=="" ){
-              Yii::$app->getSession()->setFlash('warning', [
-                  'type' => 'danger',
-                  'duration' => 5000,
-                  'icon' => 'fa fa-warning',
-                  'message' => 'DEBE SELECCIONAR ALGÚN EQUIPO',
-                  'title' => 'NOTIFICACIÓN',
-                  'positonY' => 'top',
-                  'positonX' => 'right'
-              ]);
-              return $this->render('create', [
-                  'model' => $model,
-                  'searchModelPac' => $searchModelPac,
-                  'dataProviderPac' => $dataProviderPac,
-                  'modelPac' => $modelPac,
-                  'dia'=>$dia,
-                  'medico'=>$medico,
-                  'tiempo' => $tiempo_default,
-                    'list'=> $list
-
-              ]);
+                ]);
             }
-            if (!isset($_POST["observacionquirurgica"]) ){
-              Yii::$app->getSession()->setFlash('warning', [
-                  'type' => 'danger',
-                  'duration' => 5000,
-                  'icon' => 'fa fa-warning',
-                  'message' => 'DEBE SELECCIONAR ALGUNA OBSERVACIÓN',
-                  'title' => 'NOTIFICACIÓN',
-                  'positonY' => 'top',
-                  'positonX' => 'right'
-              ]);              return $this->render('create', [
-                  'model' => $model,
-                  'searchModelPac' => $searchModelPac,
-                  'dataProviderPac' => $dataProviderPac,
-                  'modelPac' => $modelPac,
-                  'dia'=>$dia,
-                  'medico'=>$medico,
-                  'tiempo' => $tiempo_default,
-                    'list'=> $list
 
-              ]);
-            }
 
             if ($model->load($this->request->post()) && $model->save()) {
-              foreach ($cirugiaequipos as $key => $id_equipo) {
-                $modelCirugiaEquipo = new Cirugiaequipo();
-                $modelCirugiaEquipo->id_cirugiaprogramada=$model->id;
-                $modelCirugiaEquipo->id_equipo=$id_equipo;
-                $modelCirugiaEquipo->save();
-              }
-              foreach ($obsquir as $key => $id_obsquir) {
-                $modelobservacion_cirugia = new ObservacionCirugia();
-                $modelobservacion_cirugia->id_cirugiaprogramada=$model->id;
-                $modelobservacion_cirugia->id_observacionquirurgica=$id_obsquir;
-                $modelobservacion_cirugia->save();
-
-                 }
-
+              $this->cargarObservaciones($obsquir,$model);
+              $this->cargarEquipos($cirugiaequipos,$model);
               // $historia_rang
               return $this->redirect(['view', 'id' => $model->id]);
             }
@@ -396,9 +391,6 @@ class CirugiaprogramadaController extends Controller
         ]);
     }
 
-    public function actionPrueba(){
-
-    }
     /**
      * Updates an existing Cirugiaprogramada model.
      * If update is successful, the browser will be redirected to the 'view' page.
@@ -408,8 +400,8 @@ class CirugiaprogramadaController extends Controller
      */
     public function actionUpdate($id){
       //Verifico si es cargador de cir programadas sin ser medico
-      $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
-      $cargador= $usuario->isCargador();
+        $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
+        $cargador= $usuario->isCargador();
         $model = $this->findModel($id);
         ////////////PACIENTE/////////////////
         $modelPac= new Paciente();
@@ -422,25 +414,31 @@ class CirugiaprogramadaController extends Controller
         $dataProviderMed = $searchModelMed->search(Yii::$app->request->queryParams);
         $dataProviderMed->pagination->pageSize=7;
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-          (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
-          (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
+            (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
+            (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
+            if(!$this->validarObsEquipo($_POST)){
+                return $this->render('_form', [
+                    'model' => $model,
+                    'searchModelPac' => $searchModelPac,
+                    'dataProviderPac' => $dataProviderPac,
+                    'modelPac' => $modelPac,
+                    'dia'=>$dia,
+                    'medico'=>$medico,
+                    'tiempo' => $tiempo_default,
+                      'list'=> $list
 
-          Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
-            //Esto se tiene que hacer una vez
-        foreach ($cirugiaequipos as $key => $id_equipo) {
-            $modelCirugiaEquipo = new Cirugiaequipo();
-            $modelCirugiaEquipo->id_cirugiaprogramada=$model->id;
-            $modelCirugiaEquipo->id_equipo=$id_equipo;
-            $modelCirugiaEquipo->save();
-          }
-          ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
-          foreach ($obsquir as $key => $id_obsquir) {
-            $modelobservacion_cirugia = new ObservacionCirugia();
-            $modelobservacion_cirugia->id_cirugiaprogramada=$model->id;
-            $modelobservacion_cirugia->id_observacionquirurgica=$id_obsquir;
-            $modelobservacion_cirugia->save();
+                ]);
+            }
 
-             }
+            Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
+            ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
+            $this->cargarObservaciones($obsquir,$model);
+            $this->cargarEquipos($cirugiaequipos,$model);
+            if ($model->estado->descripcion=='ANULADA' || $model->estado->descripcion== 'REPROGRAMADA'){
+                Yii::$app->db->createCommand("UPDATE cirugiaprogramada SET hora_inicio= hora_inicio - '".$model->cant_tiempo."' WHERE fecha_cirugia ='".$model->fecha_cirugia."' AND id_quirofano =".$model->id_quirofano ." AND hora_inicio > '". $model->hora_inicio ."' AND id !=".$model->id)
+                            ->queryAll();
+            }
+
             return $this->redirect(['view', 'id' => $model->id]);
         }
         // $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);

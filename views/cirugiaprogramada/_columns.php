@@ -77,7 +77,7 @@ return [
     ],
       [
           'class'=>'\kartik\grid\DataColumn',
-          'attribute'=>'fecha_cirugia',
+          'attribute'=>'fecha_programada',
           'format' => ['date', 'd/M/Y'],
       ],
 
