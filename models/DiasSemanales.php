@@ -47,4 +47,18 @@ class DiasSemanales extends \yii\db\ActiveRecord
             'habilitado' => 'Habilitado',
         ];
     }
+    public function attributeColumns()
+    {
+        return [
+          [
+            'class'=>'\kartik\grid\DataColumn',
+            'attribute'=>'id',
+          ],
+          [
+            'class'=>'\kartik\grid\DataColumn',
+            'attribute'=>'dia',
+          ],
+
+        ];
+    }
 }

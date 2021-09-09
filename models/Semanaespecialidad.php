@@ -12,7 +12,7 @@ use Yii;
  * @property int $id_especialidad
  *
  * @property Especialidad $especialidad
- * @property Semana $semana
+ * @property DiasSemanales $semana
  */
 class Semanaespecialidad extends \yii\db\ActiveRecord
 {
@@ -33,7 +33,7 @@ class Semanaespecialidad extends \yii\db\ActiveRecord
             [['id_semana', 'id_especialidad'], 'default', 'value' => null],
             [['id_semana', 'id_especialidad'], 'integer'],
             [['id_especialidad'], 'exist', 'skipOnError' => true, 'targetClass' => Especialidad::className(), 'targetAttribute' => ['id_especialidad' => 'id']],
-            [['id_semana'], 'exist', 'skipOnError' => true, 'targetClass' => Semana::className(), 'targetAttribute' => ['id_semana' => 'id']],
+            [['id_semana'], 'exist', 'skipOnError' => true, 'targetClass' => DiasSemanales::className(), 'targetAttribute' => ['id_semana' => 'id']],
         ];
     }
 
@@ -62,6 +62,6 @@ class Semanaespecialidad extends \yii\db\ActiveRecord
      */
     public function getSemana()
     {
-        return $this->hasOne(Semana::className(), ['id' => 'id_semana']);
+        return $this->hasOne(DiasSemanales::className(), ['id' => 'id_semana']);
     }
 }

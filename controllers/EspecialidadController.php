@@ -10,8 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \yii\web\Response;
 use yii\helpers\Html;
-use app\models\SemanaSearch;
-use app\models\Semana;
+use app\models\DiasSemanalesSearch;
+use app\models\DiasSemanales;
 use app\models\Semanaespecialidad;
 use app\models\SemanaespecialidadSearch;
 use app\components\Metodos\Metodos;
@@ -21,7 +21,7 @@ use app\components\Metodos\Metodos;
  */
 class EspecialidadController extends Controller
 {
-    
+
     /**
      * Lists all Especialidad models.
      * @return mixed
@@ -184,6 +184,27 @@ class EspecialidadController extends Controller
         }
     }
 
+    public function actionDeletedetalle($id_detalle, $id_maestro)
+    {
+
+        Yii::$app->response->format = Response::FORMAT_JSON;
+
+        try {
+            if ($modelsemesp = Semanaespecialidad::findOne($id_detalle)) {
+                // borro registro en este caso por que es una relacion NN
+                if ($modelsemesp->delete())
+                    // return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+                    return ['forceClose' => true, 'success' => 'reloadDetalle(' . $id_maestro . ')'];
+
+            }
+        } catch (yii\db\Exception $e) {
+            return ['forceClose' => false,
+                'title' => '<p style="color:red">ERROR</p>',
+                'content' => '<div style=" font-size: 14px">Errores en la operacion indicada. Verifique.</div>',
+                'success' => 'reloadDetalle(' . $id_maestro . ')'];
+        }
+
+    }
     /**
      * Delete an existing Especialidad model.
      * For ajax request will return json object
@@ -299,8 +320,8 @@ class EspecialidadController extends Controller
               Yii::$app->end();
           }
 
-          $modelDetalle = new Semana();
-          $searchModel = new SemanaSearch();
+          $modelDetalle = new DiasSemanales();
+          $searchModel = new DiasSemanalesSearch();
           $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
           $columnas = Metodos::obtenerColumnas($modelDetalle);
 

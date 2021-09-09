@@ -103,7 +103,7 @@ use kartik\grid\GridView;
                         return $url;
                     }
                     if ($action === 'deleteDetalle') {
-                        $url ='index.php?r=rol/deletedetalle&id_detalle='.$searchModel->id.'&id_maestro='.$searchModel->id;
+                        $url ='index.php?r=rol/deletedetalle&id_detalle='.$searchModel->id.'&id_maestro='.$searchModel->id_rol;
                         return $url;
                     }
                 }

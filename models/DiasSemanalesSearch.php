@@ -42,7 +42,7 @@ class DiasSemanalesSearch extends DiasSemanales
      */
     public function search($params)
     {
-        $query = DiasSemanales::find();
+        $query = DiasSemanales::find()->orderBy("id");
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,

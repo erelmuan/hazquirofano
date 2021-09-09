@@ -4,8 +4,9 @@ use yii\helpers\Html;
 use yii\bootstrap\Modal;
 use kartik\grid\GridView;
 // use johnitvn\ajaxcrud\CrudAsset;
-use johnitvn\ajaxcrud\BulkButtonWidget;
  use quidu\ajaxcrud\CrudAsset;
+use johnitvn\ajaxcrud\BulkButtonWidget;
+
 
 /* @var $this yii\web\View */
 /* @var $searchModel app\models\RolSearch */
@@ -15,6 +16,90 @@ use kartik\export\ExportMenu;
 $this->title = 'Rols';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
+
+
+
+
+<?
+CrudAsset::register($this);
+$gridColumns =[  [
+      'class'=>'\kartik\grid\DataColumn',
+      'attribute'=>'id',
+  ],
+  [
+      'class'=>'\kartik\grid\DataColumn',
+      'attribute'=>'nombre',
+  ],
+  [
+      'class'=>'\kartik\grid\DataColumn',
+      'attribute'=>'descripcion',
+  ]];
+
+
+?>
+
+<div id="w0r" class="x_panel">
+  <div class="x_title"><h2><i class="fa fa-table"></i> ROLES  </h2>
+    <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/site/permisos'], ['class'=>'btn btn-danger grid-button']) ?></div>
+</div>
+  </div>
+
+<div class="rol-index">
+    <div id="ajaxCrudDatatable">
+        <?=GridView::widget([
+            'id'=>'crud-datatable',
+            'dataProvider' => $dataProvider,
+            'filterModel' => $searchModel,
+            'pjax'=>true,
+            'columns' => require(__DIR__.'/_columns.php'),
+            'exportConfig'=> [
+                         GridView::CSV=>[
+                             'label' => 'CSV',
+                             'icon' => '',
+                             // 'iconOptions' => '',
+                             'showHeader' => false,
+                             'showPageSummary' => false,
+                             'showFooter' => false,
+                             'showCaption' => false,
+                             'filename' => 'yii',
+                             'alertMsg' => 'created',
+                             'options' => ['title' => 'Semicolon -  Separated Values'],
+                             'mime' => 'application/csv',
+                             'config' => [
+                                 'colDelimiter' => ";",
+                                 'rowDelimiter' => "\r\n",
+                             ],
+                         ],
+                     ],
+            'toolbar'=> [
+                ['content'=>
+                    Html::button('<i class="glyphicon glyphicon-search"></i>', ['Buscar' ,'title'=> 'Buscar','class'=>'btn btn-default']).
+                    Html::a('<i class="glyphicon glyphicon-plus"></i>', ['create'],
+                    ['role'=>'modal-remote','title'=> 'Crear nuevo rol','class'=>'btn btn-default']).
+                    Html::a('<i class="glyphicon glyphicon-repeat"></i>', [''],
+                    ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar'])
+                ],
+            ],
+            'striped' => true,
+            'condensed' => true,
+            'responsive' => true,
+            'panel' => [
+                'type' => 'primary',
+                'heading' => '<i class="glyphicon glyphicon-list"></i> Lista de roles',
+                'before'=>'<em>* Para buscar algún rol tipear en el filtro y presionar ENTER o el boton <i class="glyphicon glyphicon-search"></i></em>',
+
+                        '<div class="clearfix"></div>',
+            ]
+        ])?>
+    </div>
+</div>
+</div>
+
+<?php Modal::begin([
+    "id"=>"ajaxCrudModal",
+    "footer"=>"",// always need it for jquery plugin
+])?>
+<?php Modal::end(); ?>
 <script>
     // mostrarDetalle se usa cuando hacemos un delete de detalle, desde la accion deletedetalle se
     // devuelve success => mostrarDetalle. para que se renderize nuevamente la ventana de detalle
@@ -91,86 +176,3 @@ $this->params['breadcrumbs'][] = $this->title;
     }
 
 </script>
-
-
-
-<?
-CrudAsset::register($this);
-$gridColumns =[  [
-      'class'=>'\kartik\grid\DataColumn',
-      'attribute'=>'id',
-  ],
-  [
-      'class'=>'\kartik\grid\DataColumn',
-      'attribute'=>'nombre',
-  ],
-  [
-      'class'=>'\kartik\grid\DataColumn',
-      'attribute'=>'descripcion',
-  ]];
-
-
-?>
-
-<div id="w0r" class="x_panel">
-  <div class="x_title"><h2><i class="fa fa-table"></i> ROLES  </h2>
-    <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/site/permisos'], ['class'=>'btn btn-danger grid-button']) ?></div>
-</div>
-  </div>
-
-<div class="rol-index">
-    <div id="ajaxCrudDatatable">
-        <?=GridView::widget([
-            'id'=>'crud-datatable',
-            'dataProvider' => $dataProvider,
-            'filterModel' => $searchModel,
-            'pjax'=>true,
-            'columns' => require(__DIR__.'/_columns.php'),
-            'exportConfig'=> [
-                         GridView::CSV=>[
-                             'label' => 'CSV',
-                             'icon' => '',
-                             // 'iconOptions' => '',
-                             'showHeader' => false,
-                             'showPageSummary' => false,
-                             'showFooter' => false,
-                             'showCaption' => false,
-                             'filename' => 'yii',
-                             'alertMsg' => 'created',
-                             'options' => ['title' => 'Semicolon -  Separated Values'],
-                             'mime' => 'application/csv',
-                             'config' => [
-                                 'colDelimiter' => ";",
-                                 'rowDelimiter' => "\r\n",
-                             ],
-                         ],
-                     ],
-            'toolbar'=> [
-                ['content'=>
-                    Html::button('<i class="glyphicon glyphicon-search"></i>', ['Buscar' ,'title'=> 'Buscar','class'=>'btn btn-default']).
-                    Html::a('<i class="glyphicon glyphicon-plus"></i>', ['create'],
-                    ['role'=>'modal-remote','title'=> 'Crear nuevo rol','class'=>'btn btn-default']).
-                    Html::a('<i class="glyphicon glyphicon-repeat"></i>', [''],
-                    ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar'])
-                ], 
-            ],
-            'striped' => true,
-            'condensed' => true,
-            'responsive' => true,
-            'panel' => [
-                'type' => 'primary',
-                'heading' => '<i class="glyphicon glyphicon-list"></i> Lista de roles',
-                'before'=>'<em>* Para buscar algún rol tipear en el filtro y presionar ENTER o el boton <i class="glyphicon glyphicon-search"></i></em>',
-
-                        '<div class="clearfix"></div>',
-            ]
-        ])?>
-    </div>
-</div>
-</div>
-
-<?php Modal::begin([
-    "id"=>"ajaxCrudModal",
-    "footer"=>"",// always need it for jquery plugin
-])?>
-<?php Modal::end(); ?>
