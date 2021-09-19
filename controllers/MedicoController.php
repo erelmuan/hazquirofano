@@ -97,7 +97,7 @@ class MedicoController extends Controller
         $request = Yii::$app->request;
         $model = new Medico();
 
-                  ////////////USUARIO/////////////////
+        ////////////USUARIO/////////////////
         $modelUsu= new Usuario();
         $searchModelUsu = new UsuarioSearch();
         $dataProviderUsu = $searchModelUsu->search(Yii::$app->request->queryParams);

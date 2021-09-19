@@ -11,6 +11,8 @@ use Yii;
  * @property string $dia
  * @property int $numero_semanal
  * @property bool $habilitado
+ * @property AnestesiologoSemana[] $anestesiologoSemanas
+ * @property Semanaespecialidad[] $semanaespecialidads
  */
 class DiasSemanales extends \yii\db\ActiveRecord
 {
@@ -61,4 +63,11 @@ class DiasSemanales extends \yii\db\ActiveRecord
 
         ];
     }
+    /**
+   * @return \yii\db\ActiveQuery
+   */
+  public function getSemanaespecialidads()
+  {
+      return $this->hasMany(Semanaespecialidad::className(), ['id_semana' => 'id']);
+  }
 }

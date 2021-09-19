@@ -14,6 +14,12 @@ use yii\widgets\DetailView;
             'descripcion',
             'dias',
             'activo:boolean',
+
+             [
+               'label'=>'Especialidad',
+               'value'=> ($model->especialidad)?$model->especialidad->profesion:'No definido',
+
+             ]
         ],
     ]) ?>
 

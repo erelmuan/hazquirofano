@@ -83,7 +83,7 @@ class CirugiaprogramadaController extends Controller
       $request = Yii::$app->request;
 
       if($request->isAjax){
-          Yii::$app->response->format = Response::FORMAT_JSON;
+          Yii::$app->ree->format = Response::FORMAT_JSON;
           return [
                   'title'=> "Cirugia Programada #".$id,
                   // 'content'=>$this->renderAjax('vieww', [

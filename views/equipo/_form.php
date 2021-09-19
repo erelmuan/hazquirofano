@@ -17,7 +17,8 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'activo')->checkbox() ?>
 
-  
+    <?= $form->field($model, 'id_especialidad')->dropDownList($model->getEspecialidades(), ['id'=>'id_provincia',    'prompt'=>'- Seleccionar especialidad'])->label('Especialidad') ;?>
+
 	<?php if (!Yii::$app->request->isAjax){ ?>
 	  	<div class="form-group">
 	        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
@@ -25,5 +26,5 @@ use yii\widgets\ActiveForm;
 	<?php } ?>
 
     <?php ActiveForm::end(); ?>
-    
+
 </div>

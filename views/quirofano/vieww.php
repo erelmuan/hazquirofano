@@ -1,16 +1,10 @@
 <?php
 
 use yii\widgets\DetailView;
-use yii\helpers\Html;
+
 /* @var $this yii\web\View */
 /* @var $model app\models\Quirofano */
 ?>
-<div class="cirugiaprogramada-view">
-    <div id="w0s" class="x_panel">
-      <div class="x_title"><h2><i class="fa fa-table"></i> QUIROFANO  </h2>
-        <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Ir a quirofano', ['/quirofano/index'], ['class'=>'btn btn-danger grid-button']) ?></div>
-    </div>
-      </div>
 <div class="quirofano-view">
 
     <?= DetailView::widget([
@@ -25,8 +19,8 @@ use yii\helpers\Html;
               'value'=> ($model->anestesiologo)?$model->anestesiologo->nombre:'No definido',
 
             ]
+
         ],
     ]) ?>
 
-</div>
 </div>

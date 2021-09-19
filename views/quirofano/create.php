@@ -10,5 +10,7 @@ use yii\helpers\Html;
 <div class="quirofano-create">
     <?= $this->render('_form', [
         'model' => $model,
+        'searchModelAnes' => $searchModelAnes,
+        'dataProviderAnes' => $dataProviderAnes,
     ]) ?>
 </div>

@@ -7,21 +7,16 @@ use johnitvn\ajaxcrud\CrudAsset;
 use johnitvn\ajaxcrud\BulkButtonWidget;
 
 /* @var $this yii\web\View */
-/* @var $searchModel app\models\QuirofanoSearch */
+/* @var $searchModel app\models\AnestesiologoSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Quirofanos';
+$this->title = 'Anestesiologos';
 $this->params['breadcrumbs'][] = $this->title;
 
 CrudAsset::register($this);
 
 ?>
-<div id="w0u" class="x_panel">
-  <div class="x_title"><h2><i class="fa fa-table"></i> QUIROFANO  </h2>
-    <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/parametrizacion/update','id'=>1], ['class'=>'btn btn-danger grid-button']) ?></div>
-</div>
-  </div>
-<div class="quirofano-index">
+<div class="anestesiologo-index">
     <div id="ajaxCrudDatatable">
         <?=GridView::widget([
             'id'=>'crud-datatable',
@@ -32,11 +27,10 @@ CrudAsset::register($this);
             'toolbar'=> [
                 ['content'=>
                     Html::a('<i class="glyphicon glyphicon-plus"></i>', ['create'],
-                    ['title'=> 'Crear quirofano','class'=>'btn btn-default']).
+                    ['title'=> 'Crear nuevo anestesiologo','class'=>'btn btn-default']).
                     Html::a('<i class="glyphicon glyphicon-repeat"></i>', [''],
-                    ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar']).
-                    '{toggleData}'.
-                    '{export}'
+                    ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar'])
+
                 ],
             ],
             'striped' => true,
@@ -44,14 +38,12 @@ CrudAsset::register($this);
             'responsive' => true,
             'panel' => [
                 'type' => 'primary',
-                'heading' => '<i class="glyphicon glyphicon-list"></i> Lista de Quirofanos',
-                'before'=>'<em>* NO CAMBIAR LOS QUIROFANOS, EL QUIROFANO A ESTA CONFIGURADO CON EL ID=2.</em>',
-
-                        '<div class="clearfix"></div>',
+                'heading' => '<i class="glyphicon glyphicon-list"></i> Lista Anestesiologos',
+                'before'=>'<em>* Resize table columns just like a spreadsheet by dragging the column edges.</em>',
+              
             ]
         ])?>
     </div>
-</div>
 </div>
 <?php Modal::begin([
     "id"=>"ajaxCrudModal",

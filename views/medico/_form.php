@@ -39,9 +39,6 @@ use yii\bootstrap\Modal;
       <button type="button" class ="btn btn-primary btn-xs" onclick='usuarioba();'>Buscar y añadir</button>
       </div>
 
-    <!-- <label> Usuario </label> </br>
-      <input id="cirugia-usuario" style="width:250px;" value='<?=($model->usuario)?$model->usuario->usuario.", ".$model->usuario->usuario:'' ?>' type="text" readonly>
- -->
    <div class="form-group field-medico-usuario">
    <label class="control-label" for="medico-usuario">Usuario</label>
    <input type="text" id="medico-usuario" class="form-control" value='<?=($model->usuario)?$model->usuario->usuario:'' ?>' readonly/>
@@ -61,10 +58,7 @@ use yii\bootstrap\Modal;
       ?>
 </div>
 
-
-
 <div class="x_content">
-
        <div class="x_content">
              <div class="modal fade bs-usuario-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
                <div class="modal-dialog modal-lg">
@@ -77,7 +71,7 @@ use yii\bootstrap\Modal;
                                'dataProvider' => $dataProviderUsu,
                                'filterModel' => $searchModelUsu,
                                'pjax'=>true,
-                               'columns' => require(dirname(__DIR__).'/cirugiaprogramada/_columnsUsuario.php'),
+                               'columns' => require(dirname(__DIR__).'/medico/_columnsUsuario.php'),
                                'toolbar'=> [
 
                                ],
@@ -97,7 +91,7 @@ use yii\bootstrap\Modal;
            </div>
        </div>
      </div>
-    </div>
+</div>
 
 
 </div>

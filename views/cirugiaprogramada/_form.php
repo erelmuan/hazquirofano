@@ -107,9 +107,8 @@ CrudAsset::register($this);
             //Despues lo pongo en el controler
             // $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
 
-
-                $listadoEquipos= ArrayHelper::map(Cirugiaequipo::find()->where(['id_cirugiaprogramada' => $model->id])->all(), 'id', 'id_equipo');
-                $equipos=array_values($listadoEquipos);
+            $listadoEquipos= ArrayHelper::map(Cirugiaequipo::find()->where(['id_cirugiaprogramada' => $model->id])->all(), 'id', 'id_equipo');
+            $equipos=array_values($listadoEquipos);
              ?>
             <?=Html::checkboxList('cirugiaequipos', $equipos, $list,
             [

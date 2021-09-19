@@ -1,6 +1,6 @@
 <?php
 use yii\helpers\Url;
-
+use kartik\grid\GridView;
 return [
     // [
     //     'class' => 'kartik\grid\CheckboxColumn',
@@ -27,6 +27,17 @@ return [
         'class'=>'\kartik\grid\BooleanColumn',
         'attribute'=>'activo',
     ],
+    [
+      'attribute' => 'id_especialidad',
+      'label' => 'Especialidad',
+      'value' => 'especialidad.profesion',
+      'filter'=>$searchModel->getEspecialidades(),
+      'filterType' => GridView::FILTER_SELECT2,
+      'filterWidgetOptions' => [
+          'options' => ['prompt' => ''],
+          'pluginOptions' => ['allowClear' => true],
+      ],
+  ],
     [
         'class' => 'kartik\grid\ActionColumn',
         'dropdown' => false,

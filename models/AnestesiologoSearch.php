@@ -5,12 +5,12 @@ namespace app\models;
 use Yii;
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
-use app\models\Equipo;
+use app\models\Anestesiologo;
 
 /**
- * EquipoSearch represents the model behind the search form about `app\models\Equipo`.
+ * AnestesiologoSearch represents the model behind the search form about `app\models\Anestesiologo`.
  */
-class EquipoSearch extends Equipo
+class AnestesiologoSearch extends Anestesiologo
 {
     /**
      * @inheritdoc
@@ -18,10 +18,8 @@ class EquipoSearch extends Equipo
     public function rules()
     {
         return [
-           [['id', 'dias', 'id_especialidad'], 'integer'],
-           [['descripcion'], 'safe'],
-            [['activo'], 'boolean'],
-
+            [['id'], 'integer'],
+            [['nombre'], 'safe'],
         ];
     }
 
@@ -43,7 +41,7 @@ class EquipoSearch extends Equipo
      */
     public function search($params)
     {
-        $query = Equipo::find();
+        $query = Anestesiologo::find();
 
         $dataProvider = new ActiveDataProvider([
             'query' => $query,
@@ -59,12 +57,9 @@ class EquipoSearch extends Equipo
 
         $query->andFilterWhere([
             'id' => $this->id,
-            'dias' => $this->dias,
-            'activo' => $this->activo,
-            'id_especialidad' => $this->id_especialidad, 
         ]);
 
-        $query->andFilterWhere(['like', 'descripcion', $this->descripcion]);
+        $query->andFilterWhere(['like', 'nombre', $this->nombre]);
 
         return $dataProvider;
     }

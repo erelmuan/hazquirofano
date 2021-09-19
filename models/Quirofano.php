@@ -12,6 +12,8 @@ use Yii;
  * @property string $observacion
  * @property bool $habilitado
  * @property Cirugiaprogramada[] $cirugiaprogramadas
+*  @property int $id_anestesiologo
+* @property Anestesiologo $anestesiologo
  */
 class Quirofano extends \yii\db\ActiveRecord
 {
@@ -31,6 +33,9 @@ class Quirofano extends \yii\db\ActiveRecord
         return [
             [['nombre', 'observacion'], 'string'],
             [['habilitado'], 'boolean'],
+           [['id_anestesiologo'], 'exist', 'skipOnError' => true,
+           'targetClass' => Anestesiologo::className(),
+           'targetAttribute' => ['id_anestesiologo' => 'id']],
         ];
     }
 
@@ -43,7 +48,8 @@ class Quirofano extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nombre' => 'Nombre',
             'observacion' => 'Observacion',
-            'habilitado' => 'Habilitado', 
+            'habilitado' => 'Habilitado',
+            'id_anestesiologo' => 'Id Anestesiologo',
         ];
     }
 
@@ -54,4 +60,15 @@ class Quirofano extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Cirugiaprogramada::className(), ['id_quirofano' => 'id']);
     }
+    /**
+       * @return \yii\db\ActiveQuery
+       */
+      public function getAnestesiologo()
+      {
+          return $this->hasOne(Anestesiologo::className(), ['id' => 'id_anestesiologo']);
+      }
+      public function getAnestesiologos() {
+          return ArrayHelper::map(Anestesiologo::find()->orderBy(['id'=>SORT_ASC])->all(), 'id','nombre');
+
+      }
 }

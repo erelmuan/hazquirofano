@@ -34,9 +34,9 @@ CrudAsset::register($this);
             'toolbar'=> [
                 ['content'=>
                     Html::a('<i class="glyphicon glyphicon-plus"></i>', ['create'],
-                    ['role'=>'modal-remote','title'=> 'Create new Especialidads','class'=>'btn btn-default']).
+                    ['role'=>'modal-remote','title'=> 'Crear una especialidad','class'=>'btn btn-default']).
                     Html::a('<i class="glyphicon glyphicon-repeat"></i>', [''],
-                    ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Reset Grid']).
+                    ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar']).
                     '{toggleData}'.
                     '{export}'
                 ],
@@ -47,7 +47,7 @@ CrudAsset::register($this);
             'panel' => [
                 'type' => 'primary',
                 'heading' => '<i class="glyphicon glyphicon-list"></i> Especialidads listing',
-                'before'=>'<em>* Resize table columns just like a spreadsheet by dragging the column edges.</em>',
+                'before'=>'<em>* Para buscar algún equipo tipear en el filtro y presionar ENTER o el boton <i class="glyphicon glyphicon-search"></i>.</em>',
 
             ]
         ])?>
