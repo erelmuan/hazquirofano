@@ -1,6 +1,7 @@
 <?php
 
 namespace app\models;
+use yii\helpers\ArrayHelper;
 
 use Yii;
 
@@ -57,6 +58,8 @@ class Especialidad extends \yii\db\ActiveRecord
      */
     public function getSemanaespecialidads()
     {
-        return $this->hasMany(Semanaespecialidad::className(), ['id_tipoprofesional' => 'id']);
+        return $this->hasMany(Semanaespecialidad::className(), ['id_especialidad' => 'id']);
     }
+
+
 }

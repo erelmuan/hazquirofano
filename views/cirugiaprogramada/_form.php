@@ -139,7 +139,6 @@ CrudAsset::register($this);
          <?
                 echo ( Html::label('Quirofano', 'macro', ['class' => 'control-label has-star']));
 
-                  $mapquirofano = ArrayHelper::map(Quirofano::find()->all() , 'id',  'nombre'  );
                   echo Select2::widget( [
                              'name' => 'Cirugiaprogramada[id_quirofano]',
                              'value' => $model->id_quirofano,

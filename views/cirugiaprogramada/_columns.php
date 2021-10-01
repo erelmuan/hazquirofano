@@ -2,7 +2,7 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use kartik\grid\GridView;
-
+use yii\widgets\MaskedInput;
 return [
     // [
     //     'class' => 'kartik\grid\CheckboxColumn',
@@ -75,11 +75,18 @@ return [
             'pluginOptions' => ['allowClear' => true],
         ],
     ],
-      [
-          'class'=>'\kartik\grid\DataColumn',
-          'attribute'=>'fecha_programada',
-          'format' => ['date', 'd/M/Y'],
-      ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'fecha_programada',
+        'format' => ['date', 'd/M/Y'],
+        'filterType' => MaskedInput::classname(),
+
+        'filterWidgetOptions' => [
+
+          'clientOptions' => ['alias' =>  'dd/mm/yyyy']
+            ],
+    ],
+
 
     [
         'class'=>'\kartik\grid\DataColumn',
@@ -101,7 +108,14 @@ return [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'fecha_cirugia',
         'format' => ['date', 'd/M/Y'],
+        'filterType' => MaskedInput::classname(),
+
+        'filterWidgetOptions' => [
+
+          'clientOptions' => ['alias' =>  'dd/mm/yyyy']
+            ],
     ],
+
     // [
         // 'class'=>'\kartik\grid\DataColumn',
         // 'attribute'=>'observacion',

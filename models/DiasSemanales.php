@@ -70,4 +70,9 @@ class DiasSemanales extends \yii\db\ActiveRecord
   {
       return $this->hasMany(Semanaespecialidad::className(), ['id_semana' => 'id']);
   }
+
+  public function getSemana()
+  {
+    return $this->hasOne(DiasSemanales::className(), ['id' => 'id_semana']);
+  }
 }
