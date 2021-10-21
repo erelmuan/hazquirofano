@@ -12,11 +12,11 @@ return [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'usuario.usuario',
         'width' => '170px',
-        'value' => function($dataProvider, $key, $index, $widget) {
+        'value' => function($model, $key, $index, $widget) {
             $key = str_replace("[","",$key);
             $key = str_replace("]","",$key);
             //var_dump ($key);
-          return Html::a( $dataProvider->usuario->usuario, ['usuario/view',"id"=> $dataProvider->usuario->id]
+          return Html::a( $model->usuario->usuario, ['usuario/view',"id"=> $model->usuario->id]
 
             ,[    'class' => 'text-success','role'=>'modal-remote','title'=>'Datos del paciente','data-toggle'=>'tooltip']
            );

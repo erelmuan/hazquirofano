@@ -255,6 +255,7 @@ class QuirofanoController extends Controller
                           $lerror = true;
                           break;
                       }
+                      
                   } else {
                       $lerror = true;
                       break;

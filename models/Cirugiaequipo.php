@@ -3,7 +3,7 @@
 namespace app\models;
 
 use Yii;
-use app\components\behaviors\AuditoriaBehaviors;
+// use app\components\behaviors\AuditoriaBehaviors;
 
 /**
  * This is the model class for table "cirugiaequipo".

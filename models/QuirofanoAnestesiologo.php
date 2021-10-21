@@ -33,8 +33,10 @@ class QuirofanoAnestesiologo extends \yii\db\ActiveRecord
             [['id_anestesiologo', 'id_quirofano'], 'required'],
             [['id_anestesiologo', 'id_quirofano'], 'default', 'value' => null],
             [['id_anestesiologo', 'id_quirofano'], 'integer'],
+                  [['id_anestesiologo', 'id_quirofano'], 'unique', 'targetAttribute' => ['id_anestesiologo', 'id_quirofano']], 
             [['id_anestesiologo'], 'exist', 'skipOnError' => true, 'targetClass' => Anestesiologo::className(), 'targetAttribute' => ['id_anestesiologo' => 'id']],
             [['id_quirofano'], 'exist', 'skipOnError' => true, 'targetClass' => Quirofano::className(), 'targetAttribute' => ['id_quirofano' => 'id']],
+
         ];
     }
 

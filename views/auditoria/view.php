@@ -11,7 +11,10 @@ use yii\widgets\DetailView;
         'model' => $model,
         'attributes' => [
             'id',
-            'id_usuario',
+            [
+              'value'=> $model->usuario->usuario ,
+              'label'=> 'Usuario',
+           ],
             'accion',
             'tabla',
             'fecha',

@@ -125,8 +125,8 @@ CrudAsset::register($this);
             //Despues lo pongo en el controler
             // $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
 
-            $listadoEquipos= ArrayHelper::map(Cirugiaequipo::find()->where(['id_cirugiaprogramada' => $model->id])->all(), 'id', 'id_equipo');
-            $equipos=array_values($listadoEquipos);
+            // $listadoEquipos= ArrayHelper::map(Cirugiaequipo::find()->where(['id_cirugiaprogramada' => $model->id])->all(), 'id', 'id_equipo');
+            // $equipos=array_values($listadoEquipos);
              ?>
             <?=Html::checkboxList('cirugiaequipos', $equipos, $list,
             [
@@ -156,40 +156,28 @@ CrudAsset::register($this);
 
          <div class='col-md-12'>
            <label> Observaciones </label>
-         <?
-         //Despues lo pongo en el controler
-         $listobs= ArrayHelper::map(Observacionquirurgica::find()->where('activo = true')->all(), 'id', 'descripcion');
 
-
-             $listadoObservacion= ArrayHelper::map(ObservacionCirugia::find()->where(['id_cirugiaprogramada' => $model->id])->all(), 'id', 'id_observacionquirurgica');
-             $observacion=array_values($listadoObservacion);
-          ?>
          <?=Html::checkboxList('observacionquirurgica', $observacion, $listobs,
          ['item' => function($index, $label, $name, $checked, $value) {
 
            return Html::checkbox($name, $checked, [
                'value' => $value,
                  'label'=>$label,
-              // 'disabled' => $label==='seeeee',
-              // 'disabled' => strpos($label, "(usado)"),
              'index'=>$index,
            ]);
          }
          ])
          ?>
-         <!-- <div class='col-md-3'> -->
-             <!-- <label> Anestesiologo </label> </br>
-             <input id="cirugia-anestesiologo" class="form-control" style="width:250px;" value='<?//= isset($quirofano)?$quirofano->anestesiologo->nombre:$model->anestesiologo->nombre ?>' type="text" readonly>
-             <?//=$form->field($model, 'id_anestesiologo')->hiddenInput(['value'=>isset($quirofano)?$quirofano->anestesiologo->id :$model->anestesiologo->id])->label(false); ?>
-             </div> -->
+
               <div class='col-md-6'>
                 <?=$form->field($model,"observacion")->textInput()->label("Detalles");?>
              </div>
-        <!-- </div> -->
 
          <div class='col-md-3'>
            <? if (!isset($model->id_estado)){
+                echo $form->field($model, 'estado')->textInput(['readonly' => true ,'value'=>"PENDIENTE"]);
                 echo $form->field($model, 'id_estado')->hiddenInput(['value'=>1])->label(false);
+
            } elseif( $model->id_estado==2 || $model->id_estado==3  ) {
                 echo $form->field($model, 'estado')->textInput(['readonly' => true ,'value' => $model->estado->descripcion])->label('Estado');
              }else {

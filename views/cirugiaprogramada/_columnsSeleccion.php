@@ -8,6 +8,21 @@ use app\models\Equipo;
           'class'=>'\kartik\grid\DataColumn',
           'attribute'=>'id',
       ],
+      [
+        'attribute' => 'id_quirofano',
+        'label' => 'Quirofano',
+        'value' => 'quirofano.nombre',
+        'filter'=>$searchModel->getQuirofanos(),
+        'filterType' => GridView::FILTER_SELECT2,
+        'filterWidgetOptions' => [
+            'options' => ['prompt' => ''],
+            'pluginOptions' => ['allowClear' => true],
+        ],
+      ],
+      [
+          'class'=>'\kartik\grid\DataColumn',
+          'attribute'=>'hora_inicio',
+      ],
     [
         //nombre
         'class'=>'\kartik\grid\DataColumn',
@@ -30,9 +45,59 @@ use app\models\Equipo;
 
     ],
     [
+      'class'=>'\kartik\grid\DataColumn',
+      'label'=> 'Edad',
+        'value' => function($model) {
+            list($ano,$mes,$dia) = explode("-",$model->paciente->fecha_nacimiento);
+            list($anoR,$mesR,$diaR) = explode("-",$model->fecha_cirugia);
+
+
+            $ano_diferencia  = $anoR - $ano;
+            $mes_diferencia = $mesR - $mes;
+            $dia_diferencia   = $diaR - $dia;
+            if ( $mes_diferencia < 0)
+            {
+              $ano_diferencia--;
+            }
+            elseif ( $mes_diferencia == 0){
+              if ( $dia_diferencia < 0)
+                  $ano_diferencia--;
+              }
+              return $ano_diferencia;
+            }
+
+    ],
+      [
+          //nombre
+          'class'=>'\kartik\grid\DataColumn',
+          'value'=>function($model) {
+          return  $model->paciente->num_documento;
+        },
+          'label'=> 'DNI'
+      ],
+      [
+          //nombre
+        'class'=>'\kartik\grid\DataColumn',
+        'value'=>function($model) {
+        return  $model->paciente->hc;
+      },
+        'label'=> 'HC'
+      ],
+
+          [
+              'class'=>'\kartik\grid\DataColumn',
+              'attribute'=>'diagnostico',
+          ],
+          [
+              //nombre
+            'class'=>'\kartik\grid\DataColumn',
+            'attribute'=>'procedimiento',
+            'label'=> 'Procedimiento'
+          ],
+    [
         //nombre
         'class'=>'\kartik\grid\DataColumn',
-        'label'=> 'Medico',
+        'label'=> 'Cirujano',
         'attribute'=>'medico',
         'width' => '170px',
         'value' => function($model) {
@@ -46,11 +111,10 @@ use app\models\Equipo;
 
       ],
       [
-          //nombre
-        'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'procedimiento',
-        'label'=> 'Procedimiento'
+          'class'=>'\kartik\grid\DataColumn',
+          'attribute'=>'ayudantes',
       ],
+
       [
         'attribute' => 'id_anestesia',
         'label' => 'Anestesia',
@@ -68,18 +132,12 @@ use app\models\Equipo;
           'format' => ['date', 'd/M/Y'],
       ],
 
-    [
-        'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'hora_inicio',
-    ],
+
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'cant_tiempo',
     ],
-    [
-        'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'ayudantes',
-    ],
+
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'lado',
@@ -90,16 +148,7 @@ use app\models\Equipo;
         'format' => ['date', 'd/M/Y'],
     ],
 
-    [
-        'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'diagnostico',
-    ],
-    [
-        'class'=>'\kartik\grid\DataColumn',
-        'attribute'=>'id_quirofano',
-        'attribute'=>'quirofano.nombre',
-        'label' => 'Estado',
-    ],
+
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'material_protesis',
@@ -116,17 +165,7 @@ use app\models\Equipo;
       ],
   ],
 
-  [
-    'attribute' => 'id_quirofano',
-    'label' => 'Quirofano',
-    'value' => 'quirofano.nombre',
-    'filter'=>$searchModel->getQuirofanos(),
-    'filterType' => GridView::FILTER_SELECT2,
-    'filterWidgetOptions' => [
-        'options' => ['prompt' => ''],
-        'pluginOptions' => ['allowClear' => true],
-    ],
-  ],
+
   [
       'format'    => 'html',
       'label' => 'Observaciones',

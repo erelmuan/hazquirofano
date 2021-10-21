@@ -9,6 +9,7 @@ use app\models\WiewQuirofanosDisponiblesSearch;
 use app\models\WiewHorasOcupadas;
 use app\models\DiasSinCirugia;
 use app\models\Anestesiologo;
+use app\models\Observacionquirurgica;
 
 use app\models\Usuario;
 use app\models\Especialidad;
@@ -495,6 +496,8 @@ class CirugiaprogramadaController extends Controller
         $modelCirugiaEquipo->save();
       }
     }
+
+
     public function actionCreate($dia)
     {
 
@@ -511,11 +514,11 @@ class CirugiaprogramadaController extends Controller
       $searchModelMed = new MedicoSearch();
       $dataProviderMed = $searchModelMed->search(Yii::$app->request->queryParams);
       $dataProviderMed->pagination->pageSize=7;
-      //El horario por defecto esta asociado al quirofano A
-      //El primer quirofano disponible que encuentre
+      //Obtenemos los equipos
       $model = new Cirugiaprogramada();
-
-        //Validacion antes de enviar los datos
+      $equipos=[];
+      $observacion=[];
+      //Validacion antes de enviar los datos
         if(!$this->validarAntes($dia,  $model->load($this->request->post()),"create",$cargador)){
           return $this->redirect(["cirugiaprogramada/fecha", "dia"=>$dia ]);
         }
@@ -524,16 +527,21 @@ class CirugiaprogramadaController extends Controller
 
           $tiempo_default= $this->cantidadTiempo($dia,$quirofano);
           $list = $this->listadequipos($dia,null,"create") ;
+          $listobs= ArrayHelper::map(Observacionquirurgica::find()->where('activo = true')->all(), 'id', 'descripcion');
+
           $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
 
         if ($this->request->isPost) {
 
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
+            $equipos=array_values($cirugiaequipos);
+            $observacion=array_values($obsquir);
             //Validacion despues de enviar los datos
 
             if(!$this->validarDespues($_POST , null)){
               $medico= Medico::findOne(['id' => $_POST["Cirugiaprogramada"]["id_medico"]]);
+              $model->loadDefaultValues();
 
               return $this->render('_form', [
                   'model' => $model,
@@ -545,9 +553,12 @@ class CirugiaprogramadaController extends Controller
                   'medico'=>$medico,
                   'tiempo' => $tiempo_default,
                   'list'=> $list,
+                  'listobs' => $listobs,
                   'quirofano'=> $quirofano,
                    'cargador' => $cargador,
                    'estado'=>1,
+                   'equipos'=>$equipos,
+                   'observacion'=>$observacion
 
               ]);
             }
@@ -559,8 +570,11 @@ class CirugiaprogramadaController extends Controller
               if($quirofano->necesita_anestesiologo){
                 $anestesiologo=$quirofano->anestesiologo($this->dia_semanal($dia),$quirofano->id );
                  $model->id_anestesiologo= $anestesiologo->id;
-                 $model->save();
               }
+              //estado PENDIENTE
+                $model->id_estado= 1;
+
+               $model->save();
               $this->cargarObservaciones($obsquir,$model);
               $this->cargarEquipos($cirugiaequipos,$model);
               // $historia_rang
@@ -572,6 +586,7 @@ class CirugiaprogramadaController extends Controller
           //loadDefaultValues ​​() para completar los valores predeterminados definidos por la base de datos en los atributos de Active Record correspondientes
             $model->loadDefaultValues();
         }
+        $model->loadDefaultValues();
 
         return $this->render('_form', [
             'model' => $model,
@@ -583,9 +598,14 @@ class CirugiaprogramadaController extends Controller
             'medico'=>$medico,
             'tiempo' => $tiempo_default,
             'list'=> $list,
+            'listobs' => $listobs,
             'quirofano'=> $quirofano,
              'cargador' => $cargador,
              'estado'=>1,
+             'equipos'=>$equipos,
+             'observacion'=>$observacion
+
+
 
         ]);
     }
@@ -613,7 +633,8 @@ class CirugiaprogramadaController extends Controller
         $dataProviderMed = $searchModelMed->search(Yii::$app->request->queryParams);
         $dataProviderMed->pagination->pageSize=7;
         $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
-
+        $listobs= ArrayHelper::map(Observacionquirurgica::find()->where('activo = true')->all(), 'id', 'descripcion');
+        
       if($this->request->isPost ){
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
@@ -631,7 +652,10 @@ class CirugiaprogramadaController extends Controller
               'dia'=>$model->fecha_cirugia,
               'tiempo'=>$model->hora_inicio,
               'list'=>$list,
+              'listobs' => $listobs,
               'estado'=>$model->id_estado,
+              'equipos'=>$cirugiaequipos,
+              'observacion'=>$obsquir
 
 
             ]);
@@ -661,6 +685,11 @@ class CirugiaprogramadaController extends Controller
           return $this->redirect(["index"]);
         }
 
+        $listadoObservacion= ArrayHelper::map(ObservacionCirugia::find()->where(['id_cirugiaprogramada' => $id])->all(), 'id', 'id_observacionquirurgica');
+        $observacion=array_values($listadoObservacion);
+        $listadoEquipos= ArrayHelper::map(Cirugiaequipo::find()->where(['id_cirugiaprogramada' => $id])->all(), 'id', 'id_equipo');
+        $equipos=array_values($listadoEquipos);
+
         return $this->render('_form', [
             'model' => $model,
             'searchModelPac' => $searchModelPac,
@@ -672,9 +701,10 @@ class CirugiaprogramadaController extends Controller
             'dia'=>$model->fecha_cirugia,
             'tiempo'=>$model->hora_inicio,
             'list'=>$list,
+            'listobs' => $listobs,
             'estado'=>$model->id_estado,
-
-
+            'equipos'=>$equipos,
+            'observacion'=>$observacion
         ]);
     }
 
