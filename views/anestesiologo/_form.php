@@ -19,9 +19,18 @@ use app\models\AnestesiologoSemana;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'nombre')->textInput() ?>
+    <? if($model->id==1){
+        echo  $form->field($model, 'nombre')->input("text",['readonly' => true])->label('Apellido');
+      }else {
+        echo  $form->field($model, 'nombre')->textInput();
+      }
+    ?>
+
     <label> Dias de atención </label>
-    <?
+    <? if($model->id==1){
+      echo "</br>No inciden los dias. </br>";
+    }else {
+
         $listadoDias= ArrayHelper::map(AnestesiologoSemana::find()->where(['id_anestesiologo' => $model->id])->all(), 'id', 'id_semana');
         $dias=array_values($listadoDias);
         echo Html::checkboxList('anestesiologo_semana', $dias, $list,
@@ -33,7 +42,8 @@ use app\models\AnestesiologoSemana;
               // 'disabled' => $label==='seeeee',
              'index'=>$index,
            ]);
-}]);
+        }]);
+      }
      ?>
 
 

@@ -18,15 +18,15 @@ use app\components\behaviors\AuditoriaBehaviors;
 class Cirugiaequipo extends \yii\db\ActiveRecord
 {
   // SE DEBE CAMBIAR ESTE COMPORTAMIENTO!!!! PARA CON UAN AUDITORIA BEHAVIORS
-  public function behaviors()
-    {
-
-    return array(
-           'AuditoriaBehaviors'=>array(
-                  'class'=>AuditoriaBehaviors::className(),
-                  ),
-      );
-    }
+  // public function behaviors()
+  //   {
+  //
+  //   return array(
+  //          'AuditoriaBehaviors'=>array(
+  //                 'class'=>AuditoriaBehaviors::className(),
+  //                 ),
+  //     );
+  //   }
 
 
     /**

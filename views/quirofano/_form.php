@@ -22,13 +22,8 @@ use kartik\grid\GridView;
 
     <?= $form->field($model, 'habilitado')->checkbox() ?>
 
-    <label>Buscar anestesiologo:<span id='anestesiologo'> </span>
-        <button title="Busqueda avanzada de anestesiologo" type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target=".bs-usuario-modal-lg" style="margin-left: 10px;"><i class="glyphicon glyphicon-search" ></i>
-    </button>
-      </label>
-      <input type="text" id="quirofano-anestesiologo" class="form-control" value='<?=($model->anestesiologo)?$model->anestesiologo->nombre:'' ?>' readonly/>
-   <div class="help-block"></div>
-    <?=$form->field($model, 'id_anestesiologo')->hiddenInput()->label(false); ?>
+    <?= $form->field($model, 'necesita_anestesiologo')->checkbox() ?> 
+
 
 	<?php if (!Yii::$app->request->isAjax){ ?>
 	  	<div class="form-group">

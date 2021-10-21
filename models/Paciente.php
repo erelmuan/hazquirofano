@@ -31,9 +31,9 @@ use yii\helpers\ArrayHelper;
  * @property Nacionalidad $nacionalidad
  * @property Provincia $provincia
  * @property Tipodoc $tipodoc
- * @property Solicitud[] $solicituds
- * @property Solicitudbiopsia[] $solicitudbiopsias
- * @property Solicitudpap[] $solicitudpaps
+ * @property Cirugiaprogramada[] $cirugiaprogramadas
+
+
  */
 class Paciente extends \yii\db\ActiveRecord
 {
@@ -204,5 +204,9 @@ class Paciente extends \yii\db\ActiveRecord
             return false;
           }
 
+          public function getCirugiaprogramadas()
+        		   {
+        		      return $this->hasMany(Cirugiaprogramada::className(), ['id_paciente' => 'id']);
+        		   }
 
 }

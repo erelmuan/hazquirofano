@@ -2,12 +2,21 @@
 use yii\helpers\Url;
 use yii\helpers\Html;
 use kartik\grid\GridView;
+use yii\helpers\ArrayHelper;
+
 return [
 
-        // [
-        // 'class'=>'\kartik\grid\DataColumn',
-        // 'attribute'=>'id',
-    // ],
+  [
+    'class' => '\kartik\grid\ExpandRowColumn',
+    'value' => function ($model, $key, $index, $column) {
+        return GridView::ROW_COLLAPSED;
+    },
+    'detailUrl' => Url::to(['listdetalle']),   //  action mostrarDetalle con POST expandRowKey como ID
+    'detailRowCssClass' => 'expanded-row',
+    'expandIcon' => '<i class="glyphicon glyphicon-plus" style="color:black"></i>',
+    'collapseIcon' => '<i class="glyphicon glyphicon-minus" style="color:black"></i>',
+    'expandOneOnly' => true,
+  ],
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'nombre',
@@ -21,32 +30,10 @@ return [
       'attribute'=>'habilitado',
   ],
   [
-      //nombre
-      'class'=>'\kartik\grid\DataColumn',
-      'label'=> 'Anestesiologo',
-      'attribute'=>'anestesiologo',
-      'width' => '170px',
-      'value' => function($model) {
-          //var_dump ($key);
-          if ($model->anestesiologo){
-              return Html::a( $model->anestesiologo->nombre,['anestesiologo/view',"id"=> $model->anestesiologo->id]
-                ,[    'class' => 'text-success','role'=>'modal-remote','title'=>'Datos del anestesiologo','data-toggle'=>'tooltip']
-               );
-         }else {
-           return 'No definido';
-         }
-             }
-             ,
-             'filterInputOptions' => ['placeholder' => 'Ingrese nombre','class'=>"form-control"],
-             'format' => 'raw',
-
-    ],
-  [
-    'class'=>'\kartik\grid\DataColumn',
-    'label'=>'Anestesiologo',
-    'attribute'=>'id_anestesiologo',
-    'value'=>'anestesiologo.nombre'
+    'class'=>'\kartik\grid\BooleanColumn',
+      'attribute'=>'necesita_anestesiologo',
   ],
+
     [
         'class' => 'kartik\grid\ActionColumn',
         'dropdown' => false,

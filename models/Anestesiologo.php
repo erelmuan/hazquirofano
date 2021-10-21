@@ -11,7 +11,8 @@ use Yii;
  * @property string $nombre
  *
  * @property AnestesiologoSemana[] $anestesiologoSemanas
- * @property Quirofano[] $quirofanos
+ * @property Cirugiaprogramada[] $cirugiaprogramadas
+ * @property QuirofanoAnestesiologo[] $quirofanoAnestesiologos
  */
 class Anestesiologo extends \yii\db\ActiveRecord
 {
@@ -44,6 +45,20 @@ class Anestesiologo extends \yii\db\ActiveRecord
             'nombre' => 'Nombre',
         ];
     }
+    public function attributeColumns()
+    {
+        return [
+          [
+            'class'=>'\kartik\grid\DataColumn',
+            'attribute'=>'id',
+          ],
+          [
+            'class'=>'\kartik\grid\DataColumn',
+            'attribute'=>'nombre',
+          ],
+
+        ];
+    }
 
     /**
      * @return \yii\db\ActiveQuery
@@ -53,11 +68,17 @@ class Anestesiologo extends \yii\db\ActiveRecord
         return $this->hasMany(AnestesiologoSemana::className(), ['id_anestesiologo' => 'id']);
     }
 
+    public function getCirugiaprogramadas()
+ 		   {
+ 		       return $this->hasMany(Cirugiaprogramada::className(), ['id_anestesiologo' => 'id']);
+ 		   }
+
+
     /**
      * @return \yii\db\ActiveQuery
      */
-    public function getQuirofanos()
+    public function getQuirofanoAnestesiologos()
     {
-        return $this->hasMany(Quirofano::className(), ['id_anestesiologo' => 'id']);
+        return $this->hasMany(QuirofanoAnestesiologo::className(), ['id_anestesiologo' => 'id']);
     }
 }

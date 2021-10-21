@@ -8,6 +8,8 @@ use app\models\CirugiaprogramadaSearch;
 use app\models\WiewQuirofanosDisponiblesSearch;
 use app\models\WiewHorasOcupadas;
 use app\models\DiasSinCirugia;
+use app\models\Anestesiologo;
+
 use app\models\Usuario;
 use app\models\Especialidad;
 use yii\web\Controller;
@@ -115,55 +117,82 @@ class CirugiaprogramadaController extends Controller
           }
           return gmdate("H:i:s", $total);
       }
-    public function actionTiempoajax(){
-      if (Yii::$app->request->isAjax) {
-        $out = [];
-        if (isset($_POST['id'])) {
 
-            $data = Yii::$app->request->post();
-            $id= explode(":", $data['id']);
-            $id_quirofano= $id[0];
-            $dia= explode(":", $data['dia']);
-            $fecha= $dia[0];
-            if(!empty($data['id_model'])){
-              $id_model= explode(":", $data['id_model']);
-              $id_M= $id_model[0];
-              $model=$this->findModel($id_M);
-              if($model->id_quirofano==$id_quirofano){
-                $tiempo=  $model->hora_inicio;
-                echo Json::encode([$tiempo]);
-                return;
-              }
-            }
 
-          $tiempo=  $this->cantidadTiempo($fecha,$id_quirofano);
-          echo Json::encode([$tiempo]);
-          return;
-
-        }
-      }
-    }
    public function cantidadTiempo($dia,$quirofano){
 
        $model = new Cirugiaprogramada();
        $modelParametrizacion = new Parametrizacion();
 
-       $sumTiempo= $model::find()->select(['cant_tiempo'])
-       ->where(['and',"fecha_cirugia = '".$dia."' and id_quirofano =".$quirofano." and id_estado !=2 and id_estado !=3"  ])
+      if ( $quirofano->necesita_anestesiologo === false) {
+         $sumTiempo= $model::find()->select(['cant_tiempo'])
+         ->where(['and',"fecha_cirugia = '".$dia."' and id_quirofano =".$quirofano->id." and id_estado !=2 and id_estado !=3"  ])
+         ->sum('cant_tiempo');
+         if($sumTiempo==false)
+            $sumTiempo='00:00:00';
 
-       ->sum('cant_tiempo');
-       $parametrizacion=Parametrizacion::find()
-       ->select(['hora_inicio'])->one();
-       if($sumTiempo==false)
-          $sumTiempo='00:00:00';
+     }else {
+       $anestesiologo =$quirofano->anestesiologo($this->dia_semanal($dia),$quirofano->id );
+       //  Anestesiologo::find()
+       // ->leftJoin('quirofano_anestesiologo', 'anestesiologo.id = quirofano_anestesiologo.id_anestesiologo')
+       // ->leftJoin('anestesiologo_semana', 'anestesiologo_semana.id_anestesiologo =anestesiologo.id')
+       // ->leftJoin('dias_semanales', 'dias_semanales.id = anestesiologo_semana.id_semana')
+       // ->where(['and',"dias_semanales.dia='".$this->dia_semanal($dia).
+       // "' and quirofano_anestesiologo.id_quirofano=".$quirofano->id ])
+       // ->one();
+       $sumTiempo='00:00:00';
+       foreach ( $anestesiologo->quirofanoAnestesiologos as $quirofanoAnestesiologo) {
 
+         $tiempo= $model::find()->select(['cant_tiempo'])
+         ->where(['and',"fecha_cirugia = '".$dia."' and id_quirofano =".$quirofanoAnestesiologo->id_quirofano." and id_estado !=2 and id_estado !=3"  ])
+         ->sum('cant_tiempo');
+           if($tiempo==false){
+              $tiempo='00:00:00';
+           }else {
+            $sumTiempo= $this->sumarHoras([$sumTiempo,$tiempo]);
+           }
+      }
+
+     }
+
+
+      $parametrizacion=Parametrizacion::find()
+          ->select(['hora_inicio'])->one();
        return $this->sumarHoras([$parametrizacion->hora_inicio,$sumTiempo]);
 
      }
+     public function actionTiempoajax(){
+       if (Yii::$app->request->isAjax) {
+         $out = [];
+         if (isset($_POST['id'])) {
+
+             $data = Yii::$app->request->post();
+             $id= explode(":", $data['id']);
+             $id_quirofano= $id[0];
+             $dia= explode(":", $data['dia']);
+             $fecha= $dia[0];
+             if(!empty($data['id_model'])){
+               $id_model= explode(":", $data['id_model']);
+               $id_M= $id_model[0];
+               $model=$this->findModel($id_M);
+               if($model->id_quirofano==$id_quirofano){
+                 $tiempo=  $model->hora_inicio;
+                 echo Json::encode([$tiempo]);
+                 return;
+               }
+             }
+             $quirofano = Quirofano::find()->where(["id"=>$id_quirofano])->one();
+           $tiempo=  $this->cantidadTiempo($fecha,$quirofano);
+           echo Json::encode([$tiempo]);
+           return;
+
+         }
+       }
+     }
      public function listadequipos($dia,$id_cirugia,  $accion){
-       // $modelParametrizacion = new Parametrizacion();
-       // $parametrizacion=$modelParametrizacion::find()
-       // ->select(['hora_inicio'])->one();
+
+       $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
+
        if ($accion=="create"){
         $arrayEquipos= Equipo::find()->where('activo = true')->all();
           $list= ArrayHelper::map($arrayEquipos, 'id', 'descripcion');
@@ -172,14 +201,18 @@ class CirugiaprogramadaController extends Controller
                    $usado = Cirugiaequipo::find()
                    ->leftJoin('cirugiaprogramada', 'cirugiaprogramada.id = cirugiaequipo.id_cirugiaprogramada')
                    ->where(['and','cirugiaequipo.id_equipo = '.$equipo->id ])
-                   //El numero 12 se debe parametrizar de acuerdo a fecha impuesta por cada equipo
-                   // ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= 30 and id_medico <>".$medico->id ])->count();
                    ->andWhere(['and',"( date '".$dia."' -  fecha_cirugia )  <= ".$equipo->dias." and ( date '".$dia."' -  fecha_cirugia ) >= -".$equipo->dias])->count();
 
                    if ($usado>0){
                      $list[$equipo->id]=$equipo->descripcion." (No disponible)";
                    }
              }
+
+              if (isset($equipo->especialidad->profesion) && !$usuario->isCargador() && $equipo->especialidad->profesion !== $usuario->medico->especialidad->profesion){
+                      $list[$equipo->id]=$equipo->descripcion."(Reservado x esp)";
+
+              }
+
            }
         }
         if ($accion=="update"){
@@ -203,17 +236,32 @@ class CirugiaprogramadaController extends Controller
            return $list;
    }
 
-     public function dia_semanal($nombredia) {
+     public function dia_semanal($dia) {
 
-         $dias = array('DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO');
-         $fecha = $dias[date('N', strtotime($nombredia))];
-         return $fecha;
+         $nombreDias = array('DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO');
+         $nombre_del_dia = $nombreDias[date('N', strtotime($dia))];
+         return $nombre_del_dia;
 
      }
 
 
      public function validarAntes($dia, $model, $accion,$cargador){
        // Primero validar si tiene medico asociado
+       $cirugiaprogramada = new Cirugiaprogramada();
+
+       if ($cirugiaprogramada->quirofanos($dia)== null){
+         Yii::$app->getSession()->setFlash('warning', [
+             'type' => 'danger',
+             'duration' => 5000,
+             'icon' => 'fa fa-warning',
+             'message' => 'DEBE PARAMETRIZAR LOS QUIROFANOS.',
+             'title' => 'NOTIFICACIÓN',
+             'positonY' => 'top',
+             'positonX' => 'right'
+         ]);
+         return false;
+       }
+
        $tieneMedico= Medico::find()->where(['id_usuario' => Yii::$app->user->identity->id ])->count();
          if ($tieneMedico == 0 && !$cargador){
            Yii::$app->getSession()->setFlash('warning', [
@@ -280,10 +328,53 @@ class CirugiaprogramadaController extends Controller
 
          }
 
+         $dia_sin_cirugias=DiasSinCirugia::find()->
+         andWhere(["and","fecha ='".$dia."'"])->one();
+
+         if ($dia_sin_cirugias ){
+           Yii::$app->getSession()->setFlash('warning', [
+               'type' => 'danger',
+               'duration' => 5000,
+               'icon' => 'fa fa-warning',
+               'message' => 'LA FECHA NO ESTA DISPONIBLE PARA CIRUGIAS',
+               'title' => 'NOTIFICACIÓN',
+               'positonY' => 'top',
+               'positonX' => 'right'
+           ]);
+           return false;
+
+         }
+
+         //tengo que añadir la condicion para el cargador
+        if(!$cargador){
+           $medico= Medico::find()->where(['id_usuario' => Yii::$app->user->identity->id ])->one();
+           $especialidad = Especialidad::find()->where(["id"=>$medico->id_especialidad])->one();
+           $dia_semanal = $this->dia_semanal($dia );
+           $permitido_dia=false;
+
+           foreach ($especialidad->semanaespecialidads as $dia_sem) {
+               if($dia_sem->semana->dia===$dia_semanal){
+                 $permitido_dia=true;
+               }
+           }
+         }
+       if(!$cargador &&!$permitido_dia){
+          Yii::$app->getSession()->setFlash('warning', [
+              'type' => 'danger',
+              'duration' => 5000,
+              'icon' => 'fa fa-warning',
+              'message' => 'LA ESPECIALIDAD DEL PROFESIONAL, NO TIENE HABILITADA EL DIA '.$dia_semanal,
+              'title' => 'NOTIFICACIÓN',
+              'positonY' => 'top',
+              'positonX' => 'right'
+          ]);
+          return false;
+       }
+
        return true;
      }
 
-     public function validarDespues($datos){
+     public function validarDespues($datos, $model){
                  if (!isset($datos["observacionquirurgica"]) ){
                    Yii::$app->getSession()->setFlash('warning', [
                        'type' => 'danger',
@@ -338,7 +429,7 @@ class CirugiaprogramadaController extends Controller
                        'type' => 'danger',
                        'duration' => 5000,
                        'icon' => 'fa fa-warning',
-                       'message' => 'EXCEDE LA HORA FINAL PERMITIDA',
+                       'message' => 'EXCEDE LA HORA FINAL PERMITIDA '.$parametrizacion->hora_final,
                        'title' => 'NOTIFICACIÓN',
                        'positonY' => 'top',
                        'positonX' => 'right'
@@ -358,7 +449,7 @@ class CirugiaprogramadaController extends Controller
                     $permitido_dia=true;
                   }
               }
-            if($permitido_dia){
+            if(!$permitido_dia){
                Yii::$app->getSession()->setFlash('warning', [
                    'type' => 'danger',
                    'duration' => 5000,
@@ -370,10 +461,22 @@ class CirugiaprogramadaController extends Controller
                ]);
                return false;
             }
+             if ($model !==NULL  && ($datos["Cirugiaprogramada"]["hora_inicio"] != $model->horaInicio()) && ($datos["Cirugiaprogramada"]["hora_fin"] > $model->horaInicio())){
+                  Yii::$app->getSession()->setFlash('warning', [
+                          'type' => 'danger',
+                          'duration' => 5000,
+                          'icon' => 'fa fa-warning',
+                          'message' => 'LA HORA ESTABLECIDA DE LA CIRUGIA ESTA SUPERPUESTA CON OTRA.',
+                          'title' => 'NOTIFICACIÓN',
+                          'positonY' => 'top',
+                          'positonX' => 'right'
+                      ]);
+                      return false;
 
+              }
               return true;
 
-        }
+    }
 
     public function cargarObservaciones($obsquir,$model){
       foreach ($obsquir as $key => $id_obsquir) {
@@ -410,15 +513,18 @@ class CirugiaprogramadaController extends Controller
       $dataProviderMed->pagination->pageSize=7;
       //El horario por defecto esta asociado al quirofano A
       //El primer quirofano disponible que encuentre
-      $quirofano=Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->one();
-      $tiempo_default= $this->cantidadTiempo($dia,$quirofano->id);
-      $list = $this->listadequipos($dia,null,"create") ;
-      $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
       $model = new Cirugiaprogramada();
+
         //Validacion antes de enviar los datos
         if(!$this->validarAntes($dia,  $model->load($this->request->post()),"create",$cargador)){
           return $this->redirect(["cirugiaprogramada/fecha", "dia"=>$dia ]);
         }
+          //se valido en validarAntes si el resultado da vacio
+          $quirofano= $model->quirofanos($dia)[0];
+
+          $tiempo_default= $this->cantidadTiempo($dia,$quirofano);
+          $list = $this->listadequipos($dia,null,"create") ;
+          $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
 
         if ($this->request->isPost) {
 
@@ -426,22 +532,35 @@ class CirugiaprogramadaController extends Controller
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
             //Validacion despues de enviar los datos
 
-            if(!$this->validarDespues($_POST)){
-                return $this->render('create', [
-                    'model' => $model,
-                    'searchModelPac' => $searchModelPac,
-                    'dataProviderPac' => $dataProviderPac,
-                    'modelPac' => $modelPac,
-                    'dia'=>$dia,
-                    'medico'=>$medico,
-                    'tiempo' => $tiempo_default,
-                      'list'=> $list
+            if(!$this->validarDespues($_POST , null)){
+              $medico= Medico::findOne(['id' => $_POST["Cirugiaprogramada"]["id_medico"]]);
 
-                ]);
+              return $this->render('_form', [
+                  'model' => $model,
+                  'searchModelPac' => $searchModelPac,
+                  'dataProviderPac' => $dataProviderPac,
+                  'searchModelMed' => $searchModelMed,
+                  'dataProviderMed' => $dataProviderMed,
+                  'dia'=>$dia,
+                  'medico'=>$medico,
+                  'tiempo' => $tiempo_default,
+                  'list'=> $list,
+                  'quirofano'=> $quirofano,
+                   'cargador' => $cargador,
+                   'estado'=>1,
+
+              ]);
             }
 
 
             if ($model->load($this->request->post()) && $model->save()) {
+              $quirofano= Quirofano::find()->where(['id'=>$_POST["Cirugiaprogramada"]["id_quirofano"]])->one();
+
+              if($quirofano->necesita_anestesiologo){
+                $anestesiologo=$quirofano->anestesiologo($this->dia_semanal($dia),$quirofano->id );
+                 $model->id_anestesiologo= $anestesiologo->id;
+                 $model->save();
+              }
               $this->cargarObservaciones($obsquir,$model);
               $this->cargarEquipos($cirugiaequipos,$model);
               // $historia_rang
@@ -454,32 +573,20 @@ class CirugiaprogramadaController extends Controller
             $model->loadDefaultValues();
         }
 
-        if($cargador ){
-
-          return $this->render('_cargador', [
-              'model' => $model,
-              'searchModelPac' => $searchModelPac,
-              'dataProviderPac' => $dataProviderPac,
-              'searchModelMed' => $searchModelMed,
-              'dataProviderMed' => $dataProviderMed,
-              'modelMed' => $modelMed,
-              'modelPac' => $modelPac,
-              'dia'=>$dia,
-              'medico'=>null,
-              'tiempo' => $tiempo_default,
-              'list'=> $list
-          ]);
-
-        }
-        return $this->render('create', [
+        return $this->render('_form', [
             'model' => $model,
             'searchModelPac' => $searchModelPac,
             'dataProviderPac' => $dataProviderPac,
-             'modelPac' => $modelPac,
+            'searchModelMed' => $searchModelMed,
+            'dataProviderMed' => $dataProviderMed,
             'dia'=>$dia,
             'medico'=>$medico,
             'tiempo' => $tiempo_default,
-            'list'=> $list
+            'list'=> $list,
+            'quirofano'=> $quirofano,
+             'cargador' => $cargador,
+             'estado'=>1,
+
         ]);
     }
 
@@ -505,64 +612,68 @@ class CirugiaprogramadaController extends Controller
         $searchModelMed = new MedicoSearch();
         $dataProviderMed = $searchModelMed->search(Yii::$app->request->queryParams);
         $dataProviderMed->pagination->pageSize=7;
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
+        $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
+
+      if($this->request->isPost ){
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
-            if(!$this->validarDespues($_POST)){
-                return $this->render('_form', [
-                    'model' => $model,
-                    'searchModelPac' => $searchModelPac,
-                    'dataProviderPac' => $dataProviderPac,
-                    'modelPac' => $modelPac,
-                    'dia'=>$dia,
-                    'medico'=>$medico,
-                    'tiempo' => $tiempo_default,
-                      'list'=> $list
 
-                ]);
-            }
+          if(!$this->validarDespues($_POST,$model)){
 
-            Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
-            ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
-            $this->cargarObservaciones($obsquir,$model);
-            $this->cargarEquipos($cirugiaequipos,$model);
-            if ($model->estado->descripcion=='ANULADA' || $model->estado->descripcion== 'REPROGRAMADA'){
-                Yii::$app->db->createCommand("UPDATE cirugiaprogramada SET hora_inicio= hora_inicio - '".$model->cant_tiempo."' WHERE fecha_cirugia ='".$model->fecha_cirugia."' AND id_quirofano =".$model->id_quirofano ." AND hora_inicio > '". $model->hora_inicio ."' AND id !=".$model->id)
-                            ->queryAll();
-            }
-
-            return $this->redirect(['view', 'id' => $model->id]);
-        }
-        // $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
-        if(!$this->validarAntes(null,  $model, "update",$cargador )){
-          return $this->redirect(["index"]);
-        }
-        $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
-        if($cargador ){
-
-          return $this->render('_cargador', [
+            return $this->render('_form', [
               'model' => $model,
               'searchModelPac' => $searchModelPac,
               'dataProviderPac' => $dataProviderPac,
               'searchModelMed' => $searchModelMed,
               'dataProviderMed' => $dataProviderMed,
-              'modelMed' => $modelMed,
-              'modelPac' => $modelPac,
-              'medico' => $model->medico,
+              'cargador' => $cargador,
+              'medico'=>$model->medico,
               'dia'=>$model->fecha_cirugia,
-              'tiempo' => $model->hora_inicio,
-              'list'=> $list
-          ]);
+              'tiempo'=>$model->hora_inicio,
+              'list'=>$list,
+              'estado'=>$model->id_estado,
 
+
+            ]);
         }
+        //desde el form se restrige, que una vez modificada a REPROGRAMADA O ANULADA no se puede volver a modificar.
+        if (($model->estado->descripcion=='PENDIENTE') && ($_POST["Cirugiaprogramada"]["id_estado"]==2 ||$_POST["Cirugiaprogramada"]["id_estado"] ==3 )) {
+              $model->actualizarHora();
+        }
+        if ($model->load($this->request->post()) && $model->save()) {
+
+            Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
+            ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
+            $this->cargarObservaciones($obsquir,$model);
+            $this->cargarEquipos($cirugiaequipos,$model);
+
+            $quirofano= Quirofano::find()->where(['id'=>$_POST["Cirugiaprogramada"]["id_quirofano"]])->one();
+            if($quirofano->necesita_anestesiologo){
+              $anestesiologo=$quirofano->anestesiologo($this->dia_semanal($model->fecha_cirugia),$quirofano->id );
+               $model->id_anestesiologo= $anestesiologo->id;
+               $model->save();
+            }
+            return $this->redirect(['view', 'id' => $model->id]);
+        }
+      }
+        // $medico= Medico::findOne(['id_usuario' => Yii::$app->user->identity->id ]);
+        if(!$this->validarAntes($model->fecha_cirugia,  $model, "update",$cargador )){
+          return $this->redirect(["index"]);
+        }
+
         return $this->render('_form', [
             'model' => $model,
             'searchModelPac' => $searchModelPac,
             'dataProviderPac' => $dataProviderPac,
+            'searchModelMed' => $searchModelMed,
+            'dataProviderMed' => $dataProviderMed,
+            'cargador' => $cargador,
             'medico'=>$model->medico,
             'dia'=>$model->fecha_cirugia,
             'tiempo'=>$model->hora_inicio,
-            'list'=>$list
+            'list'=>$list,
+            'estado'=>$model->id_estado,
+
 
         ]);
     }
@@ -600,40 +711,55 @@ class CirugiaprogramadaController extends Controller
     ]);
 
     }
-    public function porcentaje($id_quirofano,$fecha){
+
+    public function calculoHoras($hora_inicio, $hora_final){
+
+        $inicio= new \DateTime($hora_inicio);
+        $fin=new \DateTime($hora_final);
+        $tiempo = $inicio->diff($fin);
+        $minutos=$tiempo->format('%i')/60;
+        $hora=$tiempo->format('%h');
+        $cantHoras= $hora +$minutos;
+      return $cantHoras;
+
+    }
+  public function porcentaje($quirofano,$fecha){
 
       $historial_rango= HistorialRangoHorario::find()->where(["and","fecha <= '".$fecha."'"])->orderBy(['id'=>SORT_DESC])->one();
 
-      $inicio= new \DateTime($historial_rango->hora_inicio);
-      $fin=new \DateTime($historial_rango->hora_final);
-      $tiempo = $inicio->diff($fin);
-      $minutos=$tiempo->format('%i')/60;
-      $hora=$tiempo->format('%h');
-      $horas_disponibles= $hora +$minutos;
+      $horas_disponibles= $this->calculoHoras($historial_rango->hora_inicio,$historial_rango->hora_final);
 
-      $HU= WiewHorasOcupadas::find()->select(['horas_ocupadas'])->where(["and","id_quirofano   =".$id_quirofano." and fecha_cirugia= '".$fecha."'"])->one();
-      if(!isset($HU->horas_ocupadas)){
-        $horas_usadas=0;
+      $cirugia_programada= Cirugiaprogramada::find()
+      ->where(["and","id_quirofano   =".$quirofano->id." and fecha_cirugia= '".$fecha."'"])
+      ->orderBy(['id'=>SORT_DESC])
+      ->one();
+      // $HU= WiewHorasOcupadas::find()->select(['horas_ocupadas'])
+      // ->where(["and","id_quirofano   =".$quirofano->id." and fecha_cirugia= '".$fecha."'"])->one();
+      if(!$quirofano->necesita_anestesiologo and isset($cirugia_programada->hora_fin)){
+
+              $horas_usadas= $this->calculoHoras($historial_rango->hora_inicio,$cirugia_programada->hora_fin);
+
+      }elseif(isset($cirugia_programada->id_anestesiologo)){
+        //Si existe la cirugia programada entonces selecciono aquella donde el anestesiologo este en dos o mas quirofanos
+        //obtengo la cirugia programada donde la hora fin sea mayor, porque esta representara la hora de inicio para cualquier
+        //quirofano donde este el anestesiologo, si este esta asociado a un solo quirofano igual la consulta sera valida
+        $cirugia_programadaAnest= Cirugiaprogramada::find()->select(['hora_fin'])
+        ->where(["and","id_anestesiologo   =".$cirugia_programada->id_anestesiologo." and fecha_cirugia= '".$fecha."'"])
+        ->orderBy(['hora_fin'=>SORT_DESC])
+        ->one();
+        $horas_usadas= $this->calculoHoras($historial_rango->hora_inicio,$cirugia_programadaAnest->hora_fin);
+
       }else {
-        $mDateI= new \DateTime ( $HU->horas_ocupadas);
-        $mDateF=new \DateTime('00:00:00');
-
-        $horas_ocupadas=$mDateI->diff($mDateF);
-        $minutos=$horas_ocupadas->format('%i')/60;
-        $hora=$horas_ocupadas->format('%h');
-        $horas_usadas= $hora +$minutos;
+        $horas_usadas=0;
       }
-
 
       $porcentaje=100*$horas_usadas/$horas_disponibles;
       $porcentaje=round($porcentaje, 0);   // Quitar los decimales
       return ($porcentaje);
-      //Obtener el valor total de horas disponibles
-      //obtener la cantidad de horas usadas en el quierofano
-      //calcular el porcentaje  horas_disponibles * horas_usadas /100
+
     }
 
-        public function actionCalendario(){
+    public function actionCalendario(){
           $searchModel = new WiewQuirofanosDisponiblesSearch();
           $dataProvider = $searchModel->search($this->request->queryParams);
             $parametrizacion= Parametrizacion::find()->one();
@@ -649,7 +775,7 @@ class CirugiaprogramadaController extends Controller
               $event= new \yii2fullcalendar\models\Event();
                 $event->id= $quirofano->id;
                 $fecha=date("Y-m-d", strtotime($cirugia->fecha_cirugia));
-                    $valor=$this->porcentaje($quirofano->id,$fecha);
+                    $valor=$this->porcentaje($quirofano,$fecha);
                     if(trim($valor) >='100'){
                       $event->color= "red";
                     }else {

@@ -94,6 +94,10 @@ return [
     ],
     [
         'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'hora_fin',
+    ],
+    [
+        'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'cant_tiempo',
     ],
     // [
@@ -132,6 +136,10 @@ return [
         // 'class'=>'\kartik\grid\DataColumn',
         // 'attribute'=>'material_protesis',
     // ],
+    // [
+      // 'class'=>'\kartik\grid\DataColumn',
+      // 'attribute'=>'id_anestesiologo',
+  // ],
     [
       'attribute' => 'id_estado',
       'label' => 'Estado',

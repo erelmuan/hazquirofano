@@ -39,7 +39,8 @@ use yii\helpers\Html;
              'format' => ['date', 'd/M/Y'],
           ],
             'hora_inicio',
-            'cant_tiempo',
+              'hora_fin',
+            // 'cant_tiempo',
             'ayudantes',
             'lado',
 
@@ -86,6 +87,11 @@ use yii\helpers\Html;
               'value'=> $model->estado->descripcion ,
               'label'=> 'Estado',
            ],
+            'hora_fin',
+          //  [
+          //    'value'=> $model->anestesiologo->nombre ,
+          //    'label'=> 'Anestesiologo',
+          // ],
 
         ],
     ]) ?>

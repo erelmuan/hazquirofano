@@ -16,6 +16,11 @@ $this->params['breadcrumbs'][] = $this->title;
 CrudAsset::register($this);
 
 ?>
+<div id="w0Audi" class="x_panel">
+  <div class="x_title"><h2><i class="fa fa-table"></i> ANESTESIOLOGO  </h2>
+    <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/site/administracion'], ['class'=>'btn btn-danger grid-button']) ?></div>
+</div>
+  </div>
 <div class="anestesiologo-index">
     <div id="ajaxCrudDatatable">
         <?=GridView::widget([
@@ -40,11 +45,13 @@ CrudAsset::register($this);
                 'type' => 'primary',
                 'heading' => '<i class="glyphicon glyphicon-list"></i> Lista Anestesiologos',
                 'before'=>'<em>* Resize table columns just like a spreadsheet by dragging the column edges.</em>',
-              
+
             ]
         ])?>
     </div>
 </div>
+</div>
+
 <?php Modal::begin([
     "id"=>"ajaxCrudModal",
     "footer"=>"",// always need it for jquery plugin

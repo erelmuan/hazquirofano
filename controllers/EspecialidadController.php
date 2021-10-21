@@ -287,6 +287,60 @@ class EspecialidadController extends Controller
     }
 
 
+    // public function actionAdddia(){
+    //       if (Yii::$app->request->isAjax AND isset($_POST['id_especialidad'])) {
+    //         if (!isset($_POST['keylist']) ) {
+    //           Yii::$app->response->format = Response::FORMAT_JSON;
+    //           return ['status' => 'error'];
+    //
+    //         }
+    //           $lerror = false;
+    //           $id_especialidad = $_POST['id_especialidad'];
+    //
+    //           foreach ($_POST['keylist'] as $value) {
+    //
+    //               if ($modelSemanaEspecialidad = new Semanaespecialidad()) {
+    //
+    //                   $modelSemanaEspecialidad->id_especialidad = $id_especialidad;
+    //                   $modelSemanaEspecialidad->id_semana = $value;
+    //                   if (!$modelSemanaEspecialidad->save()) {
+    //                       $lerror = true;
+    //                       break;
+    //                   }
+    //               } else {
+    //                   $lerror = true;
+    //                   break;
+    //               }
+    //
+    //           }
+    //
+    //           if ($lerror) {
+    //               return ['status' => 'error'];
+    //           }
+    //           return ['status' => 'success'];
+    //
+    //           Yii::$app->end();
+    //       }
+    //
+    //       $modelDetalle = new DiasSemanales();
+    //       $searchModel = new DiasSemanalesSearch();
+    //       $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+    //       $columnas = Metodos::obtenerColumnas($modelDetalle);
+    //
+    //             Yii::$app->response->format = Response::FORMAT_JSON;
+    //           return [
+    //               'title' => 'Agregar Dia',
+    //               'content' => $this->renderAjax('_adddia', [
+    //                   'searchModel' => $searchModel,
+    //                   'dataProvider' => $dataProvider,
+    //                   'columns' => $columnas,
+    //                   'id_especialidad' => $_GET['id_maestro'],
+    //               ]),
+    //
+    //           ];
+    //
+    //     }
+
     public function actionAdddia(){
 
           if (isset($_POST['keylist']) AND isset($_POST['id_especialidad'])) {

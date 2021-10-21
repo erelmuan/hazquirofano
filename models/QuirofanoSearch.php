@@ -18,9 +18,9 @@ class QuirofanoSearch extends Quirofano
     public function rules()
     {
         return [
-            [['id' , 'id_anestesiologo'], 'integer'],
+            [['id' ], 'integer'],
             [['nombre', 'observacion'], 'safe'],
-            [['habilitado'], 'boolean'],
+            [['habilitado', 'necesita_anestesiologo'], 'boolean'],
         ];
     }
 
@@ -59,11 +59,11 @@ class QuirofanoSearch extends Quirofano
         $query->andFilterWhere([
             'id' => $this->id,
            'habilitado' => $this->habilitado,
-            'id_anestesiologo' => $this->id_anestesiologo,
+           'necesita_anestesiologo' => $this->necesita_anestesiologo,
         ]);
 
         $query->andFilterWhere(['like', 'nombre', $this->nombre])
-            ->andFilterWhere(['like', 'observacion', $this->observacion]);
+            ->andFilterWhere(['ilike', 'observacion', $this->observacion]);
 
         return $dataProvider;
     }

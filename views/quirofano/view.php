@@ -21,10 +21,22 @@ use yii\helpers\Html;
             'observacion',
             'habilitado:boolean',
             [
-              'label'=>'Anestesiologo',
-              'value'=> ($model->anestesiologo)?$model->anestesiologo->nombre:'No definido',
+            'attribute' => 'Anestesiologo',
+                'format'    => 'html',
+                'value'     => call_user_func(function($model)
+                {
+                    $items = "";
+                    $cant=1;
+                    foreach ($model->quirofanoAnestesiologos as $quirofanoAnestesiologo) {
 
-            ]
+                        $items .="<b>".$cant.":</b>". $quirofanoAnestesiologo->anestesiologo->nombre."<br>";
+                        $cant++;
+                    }
+                    return $items;
+                }, $model)
+            ],
+           'necesita_anestesiologo:boolean',
+
         ],
     ]) ?>
 

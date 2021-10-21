@@ -11,9 +11,9 @@ use Yii;
  * @property string $nombre
  * @property string $observacion
  * @property bool $habilitado
+* @property bool $necesita_anestesiologo
  * @property Cirugiaprogramada[] $cirugiaprogramadas
-*  @property int $id_anestesiologo
-* @property Anestesiologo $anestesiologo
+ * @property QuirofanoAnestesiologo[] $quirofanoAnestesiologos
  */
 class Quirofano extends \yii\db\ActiveRecord
 {
@@ -32,10 +32,8 @@ class Quirofano extends \yii\db\ActiveRecord
     {
         return [
             [['nombre', 'observacion'], 'string'],
-            [['habilitado'], 'boolean'],
-           [['id_anestesiologo'], 'exist', 'skipOnError' => true,
-           'targetClass' => Anestesiologo::className(),
-           'targetAttribute' => ['id_anestesiologo' => 'id']],
+            [['habilitado', 'necesita_anestesiologo'], 'boolean'],
+
         ];
     }
 
@@ -48,8 +46,7 @@ class Quirofano extends \yii\db\ActiveRecord
             'id' => 'ID',
             'nombre' => 'Nombre',
             'observacion' => 'Observacion',
-            'habilitado' => 'Habilitado',
-            'id_anestesiologo' => 'Id Anestesiologo',
+            'habilitado' => 'Habilitado'
         ];
     }
 
@@ -61,14 +58,26 @@ class Quirofano extends \yii\db\ActiveRecord
         return $this->hasMany(Cirugiaprogramada::className(), ['id_quirofano' => 'id']);
     }
     /**
-       * @return \yii\db\ActiveQuery
-       */
-      public function getAnestesiologo()
-      {
-          return $this->hasOne(Anestesiologo::className(), ['id' => 'id_anestesiologo']);
-      }
-      public function getAnestesiologos() {
-          return ArrayHelper::map(Anestesiologo::find()->orderBy(['id'=>SORT_ASC])->all(), 'id','nombre');
+   * @return \yii\db\ActiveQuery
+   */
+  public function getQuirofanoAnestesiologos()
+  {
+      return $this->hasMany(QuirofanoAnestesiologo::className(), ['id_quirofano' => 'id']);
+  }
 
-      }
+  public function anestesiologo($dia , $id)
+  {
+
+    $quirofanoAnestesiologo=    Anestesiologo::find()
+      ->leftJoin('quirofano_anestesiologo', 'anestesiologo.id = quirofano_anestesiologo.id_anestesiologo')
+      ->leftJoin('anestesiologo_semana', 'anestesiologo_semana.id_anestesiologo =anestesiologo.id')
+      ->leftJoin('dias_semanales', 'dias_semanales.id = anestesiologo_semana.id_semana')
+      ->where(['and',"dias_semanales.dia='".$dia.
+      "' and quirofano_anestesiologo.id_quirofano=".$id ])
+      ->one();
+
+
+      return $quirofanoAnestesiologo;
+  }
+
 }

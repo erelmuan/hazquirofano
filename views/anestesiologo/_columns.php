@@ -3,10 +3,10 @@ use yii\helpers\Url;
 
 return [
 
-        // [
-        // 'class'=>'\kartik\grid\DataColumn',
-        // 'attribute'=>'id',
-    // ],
+        [
+        'class'=>'\kartik\grid\DataColumn',
+        'attribute'=>'id',
+    ],
     [
         'class'=>'\kartik\grid\DataColumn',
         'attribute'=>'nombre',
@@ -20,13 +20,17 @@ return [
         {
             $items = "";
             $cant=1;
+            if($model->id==1){
+              return "No inciden los dias.";
+            }else {
+              foreach ($model->anestesiologoSemanas as $dia_sem) {
 
-            foreach ($model->anestesiologoSemanas as $dia_sem) {
-
-                $items .="<b>".$cant.":</b>". $dia_sem->semana->dia."<br>";
-                $cant++;
+                  $items .="<b>".$cant.":</b>". $dia_sem->semana->dia."<br>";
+                  $cant++;
+              }
+              return $items;
             }
-            return $items;
+
 
         }
     ],

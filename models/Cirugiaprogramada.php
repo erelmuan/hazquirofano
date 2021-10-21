@@ -25,7 +25,10 @@ use Yii;
  * @property string $material_protesis
  * @property string $otro_equpo
  * @property int $id_estado
+ * @property int id_anestesiologo
 
+ * @property string $hora_fin
+* @property Anestesiologo $anestesiologo
  * @property Cirugiaequipo[] $cirugiaequipos
  * @property Anestesia $anestesia
  * @property WiewIntervaloTiempo $cant_tiempo
@@ -68,13 +71,14 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
           [['id_paciente', 'id_medico', 'id_anestesia', 'fecha_programada', 'hora_inicio', 'ayudantes', 'diagnostico', 'id_quirofano', 'procedimiento', 'id_estado'], 'required'],
     		           [['id_paciente', 'id_medico', 'id_anestesia', 'id_quirofano','id_estado'], 'default', 'value' => null],
     		           [['id_paciente', 'id_medico', 'id_anestesia', 'id_quirofano','id_estado'], 'integer'],
-    		           [['fecha_programada', 'hora_inicio', 'fecha_cirugia', 'cant_tiempo'], 'safe'],
+    		           [['fecha_programada', 'hora_inicio', 'fecha_cirugia', 'cant_tiempo','hora_fin'], 'safe'],
     		           [['ayudantes', 'lado', 'observacion', 'diagnostico', 'material_protesis', 'otro_equpo', 'procedimiento'], 'string'],
             [['id_anestesia'], 'exist', 'skipOnError' => true, 'targetClass' => Anestesia::className(), 'targetAttribute' => ['id_anestesia' => 'id']],
             [['id_medico'], 'exist', 'skipOnError' => true, 'targetClass' => Medico::className(), 'targetAttribute' => ['id_medico' => 'id']],
             [['id_paciente'], 'exist', 'skipOnError' => true, 'targetClass' => Paciente::className(), 'targetAttribute' => ['id_paciente' => 'id']],
             [['id_quirofano'], 'exist', 'skipOnError' => true, 'targetClass' => Quirofano::className(), 'targetAttribute' => ['id_quirofano' => 'id']],
             [['id_estado'], 'exist', 'skipOnError' => true, 'targetClass' => Estado::className(), 'targetAttribute' => ['id_estado' => 'id']],
+            [['id_anestesiologo'], 'exist', 'skipOnError' => true, 'targetClass' => Anestesiologo::className(), 'targetAttribute' => ['id_anestesiologo' => 'id']],
         ];
     }
 
@@ -101,6 +105,8 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
             'material_protesis' => 'Material Protesis',
             'otro_equpo' => 'Otro Equpo',
             'id_estado' => 'Id Estado',
+            'id_anestesiologo' => 'Id Anestesiologo',
+             'hora_fin' => 'Hora Fin',
         ];
     }
 
@@ -141,8 +147,6 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
     }
 
 
-
-
     /**
      * @return \yii\db\ActiveQuery
      */
@@ -168,6 +172,13 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
   {
       return ArrayHelper::map(Estado::find()->all(), 'id','descripcion');
   }
+
+
+  public function getAnestesiologo()
+  {
+ 		 return $this->hasOne(Anestesiologo::className(), ['id' => 'id_anestesiologo']);
+  }
+
   /**
    * @return \yii\db\ActiveQuery
    */
@@ -176,7 +187,65 @@ class Cirugiaprogramada extends \yii\db\ActiveRecord
       return $this->hasOne(Quirofano::className(), ['id' => 'id_quirofano']);
   }
   public function getQuirofanos() {
-      return ArrayHelper::map(Quirofano::find()->orderBy(['id'=>SORT_ASC])->where(['and','habilitado= true' ])->all(), 'id','nombre');
+    // cirugias y quirofano para este dia
+      return
+      ArrayHelper::map(
+        Quirofano::find()
+      ->orderBy(['id'=>SORT_ASC])
+      ->where(['and','habilitado= true' ])
+      ->all()
+      , 'id','nombre');
 
   }
+  public function dia_semanal($dia) {
+
+      $nombreDias = array('DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO');
+      $nombre_del_dia = $nombreDias[date('N', strtotime($dia))];
+      return $nombre_del_dia;
+
+  }
+  public function quirofanos($dia) {
+    // cirugias y quirofano para este dia
+      return
+        Quirofano::find()->orderBy(['id'=>SORT_ASC])
+        ->leftJoin('quirofano_anestesiologo', 'quirofano.id = quirofano_anestesiologo.id_quirofano')
+        ->leftJoin('anestesiologo_semana', 'anestesiologo_semana.id_anestesiologo = quirofano_anestesiologo.id_anestesiologo')
+        ->leftJoin('dias_semanales', 'dias_semanales.id = anestesiologo_semana.id_semana')
+        ->where(['and',"dias_semanales.dia='".$this->dia_semanal($dia)."' and quirofano.habilitado= true" ])
+        ->orWhere(['or','necesita_anestesiologo= false' ])
+        ->all();
+
+  }
+  public function horaInicio() {
+    // cirugias y quirofano para este dia
+      if($this->quirofano->necesita_anestesiologo){
+          $cirugia=Cirugiaprogramada::find()->orderBy(['hora_inicio'=>SORT_DESC])
+          ->where(['and',"fecha_cirugia='".$this->fecha_cirugia.
+          "' and id_anestesiologo=".$this->id_anestesiologo ])
+          ->one();
+        }else {
+          $cirugia=Cirugiaprogramada::find()->orderBy(['hora_inicio'=>SORT_DESC])
+          ->where(['and',"fecha_cirugia='".$this->fecha_cirugia."' and id_quirofano=".$this->id_quirofano ])
+          ->one();
+        }
+        return $cirugia->hora_inicio;
+  }
+  public function actualizarHora(){
+    if($this->quirofano->necesita_anestesiologo){
+        Yii::$app->db->createCommand("UPDATE cirugiaprogramada
+          SET hora_inicio= hora_inicio - '".$this->cant_tiempo. "' , hora_fin= hora_fin - '".$this->cant_tiempo. "'
+           WHERE fecha_cirugia ='".$this->fecha_cirugia."' AND hora_inicio > '". $this->hora_inicio ."' AND id !=".$this->id." AND id_anestesiologo=".$this->id_anestesiologo
+        )
+                    ->queryAll();
+      }else {
+        Yii::$app->db->createCommand("UPDATE cirugiaprogramada
+          SET hora_inicio= hora_inicio - '".$this->cant_tiempo. "' , hora_fin= hora_fin - '".$this->cant_tiempo. "' WHERE fecha_cirugia ='"
+        .$this->fecha_cirugia."' AND id_quirofano =".
+        $this->id_quirofano ." AND hora_inicio > '". $this->hora_inicio ."' AND id !=".$this->id)
+                    ->queryAll();
+      }
+  }
+
+
+
 }

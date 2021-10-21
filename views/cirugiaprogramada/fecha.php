@@ -24,7 +24,43 @@ $this->params['breadcrumbs'][] = $this->title;
 CrudAsset::register($this);
 
 ?>
+<style>
+.timeline .tagrojo {
+    display: block;
+    height: 30px;
+    font-size: 13px;
+    padding: 8px;
+}
+.tagrojo{
+  /* background-color: rgb(158, 22, 48); */
 
+line-height: 1;
+background: rgb(158, 22, 48);
+color: #fff !important;
+}
+
+.tagrojo::after {
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+    border-left-color: rgb(158, 22, 48);
+}
+.tagrojo::after {
+    content: " ";
+    height: 30px;
+    width: 0;
+    position: absolute;
+    left: 100%;
+    top: 0;
+    margin: 0;
+    pointer-events: none;
+    border-top: 14px solid transparent;
+        border-top-color: transparent;
+    border-bottom: 14px solid transparent;
+        border-bottom-color: transparent;
+    border-left: 11px solid #1ABB9C;
+        border-left-color:  rgb(158, 22, 48);
+}
+</style>
 <div id="w0s" class="x_panel">
   <div class="x_title"><h2><i class="glyphicon glyphicon-list"></i> Listado cirugias programadas  </h2>
     <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/cirugiaprogramada/calendario'], ['class'=>'btn btn-danger grid-button']) ?></div>
@@ -57,52 +93,65 @@ CrudAsset::register($this);
               <li>
                 <div class="block">
                   <div class="tags">
-                    <a href="/hazquirofano/web/index.php?r=cirugiaprogramada%2Fview&amp;id=<?=$cirugiaprogramada->id; ?>" class="tag" title="" aria-label="Ver" data-pjax="0" role="modal-remote" data-toggle="tooltip" >
-                      <span><?=$cirugiaprogramada->hora_inicio?></span>
+                    <? if ($cirugiaprogramada->estado->descripcion==="ANULADA"||$cirugiaprogramada->estado->descripcion==="REPROGRAMADA"){
+                        echo   Html::a('<b>'.$cirugiaprogramada->hora_inicio.'</b>', ['/cirugiaprogramada/view','id'=>$cirugiaprogramada->id], ['class'=>'tagrojo','role'=>"modal-remote",'data-toggle'=>"tooltip",'data-pjax'=>"0" ]);
+                      }else {
+                        echo   Html::a('<b>'.$cirugiaprogramada->hora_inicio.'</b>', ['/cirugiaprogramada/view','id'=>$cirugiaprogramada->id], ['class'=>'tag','role'=>"modal-remote",'data-toggle'=>"tooltip",'data-pjax'=>"0" ]);
+
+                      }
+
+                         ?>
                     </a>
                   </div>
                   <div class="block_content">
                     <div class="col-sm-4 invoice-col">
 
                         <h5 class="title">
-                                      MEDICO: <a><?=$cirugiaprogramada->medico->nombre." ".$cirugiaprogramada->medico->apellido?></a>
+                                      <b>MEDICO: </b><?=$cirugiaprogramada->medico->nombre." ".$cirugiaprogramada->medico->apellido?>
                         </h5>
                         <h5 class="title">
-                                      PACIENTE: <a><?=$cirugiaprogramada->paciente->nombre." ".$cirugiaprogramada->paciente->apellido?></a>
+                                 <b>  ESPECIALIDAD: </b><?=$cirugiaprogramada->medico->especialidad->profesion?>
                         </h5>
                         <h5 class="title">
-                                      PROCEDIMIENTO:<a> <?=$cirugiaprogramada->procedimiento?></a>
+                                      <b>PACIENTE: </b><?=$cirugiaprogramada->paciente->nombre." ".$cirugiaprogramada->paciente->apellido?>
+                        </h5>
+                        <h5 class="title">
+                                      <b>PROCEDIMIENTO:</b> <?=$cirugiaprogramada->procedimiento?>
                         </h5>
                     </div>
                       <div class="col-sm-4 invoice-col">
                             <h5 class="title">
-                                          ANESTESIA: <a><?=$cirugiaprogramada->anestesia->descripcion?></a>
+                                      <b> ANESTESIA: </b><?=$cirugiaprogramada->anestesia->descripcion?>
                             </h5>
                             <h5 class="title">
-                                          LADO: <a><?=$cirugiaprogramada->lado?></a>
+                                      <b> LADO: </b><?=$cirugiaprogramada->lado?>
                             </h5>
                             <h5 class="title">
-                                          AYUDANTES: <a><?=$cirugiaprogramada->ayudantes?></a>
+                                      <b> AYUDANTES: </b><?=$cirugiaprogramada->ayudantes?>
                             </h5>
                             <!-- <h5 class="title"> -->
-                                          <!-- Duración: <a><?//=$cirugiaprogramada->cant_tiempo?> hs</a> -->
+                                          <!-- Duración: <b><?//=$cirugiaprogramada->cant_tiempo?> hs</b> -->
                             <!-- </h5> -->
                       </div>
                       <div class="col-sm-4 invoice-col">
                             <h5 class="title">
-                                          DIAGNOSTICO: <a><?=$cirugiaprogramada->diagnostico?></a>
+                                      <b>DIAGNOSTICO: </b><?=$cirugiaprogramada->diagnostico?>
                             </h5>
                             <h5 class="title">
-                                          QUIROFANO: <a><?=$cirugiaprogramada->quirofano->nombre?></a>
+                                      <b>QUIROFANO: </b><?=$cirugiaprogramada->quirofano->nombre?>
                             </h5>
                             <h5 class="title">
-                                          DURACIÓN: <a><?=$cirugiaprogramada->cant_tiempo?></a>
+                                      <b>  DURACIÓN: </b><?=$cirugiaprogramada->cant_tiempo?>
+                            </h5>
+                            <h5 class="title">
+                                      <b>    HORA FINAL: </b><?=$cirugiaprogramada->hora_fin?> hs</b>
                             </h5>
                       </div>
                       <div class="col-sm-4 invoice-col">
                             <h5 class="title">
-                                          ESTADO: <a><?=$cirugiaprogramada->estado->descripcion?></a>
+                                     <b>  ESTADO: </b><?=$cirugiaprogramada->estado->descripcion?>
                             </h5>
+
 
                       </div>
 

@@ -24,12 +24,16 @@ use yii\helpers\Html;
                 {
                     $items = "";
                     $cant=1;
-                    foreach ($model->anestesiologoSemanas as $dia_sem) {
+                    if($model->id==1){
+                      return "No inciden los dias.";
+                    }else {
+                      foreach ($model->anestesiologoSemanas as $dia_sem) {
 
-                        $items .="<b>".$cant.":</b>". $dia_sem->semana->dia."<br>";
-                        $cant++;
+                          $items .="<b>".$cant.":</b>". $dia_sem->semana->dia."<br>";
+                          $cant++;
+                      }
+                      return $items;
                     }
-                    return $items;
                 }, $model)
             ],
         ],

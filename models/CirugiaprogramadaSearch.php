@@ -23,8 +23,8 @@ class CirugiaprogramadaSearch extends Cirugiaprogramada
     public function rules()
     {
         return [
-            [['id', 'id_paciente', 'id_medico',  'id_anestesia',  'id_quirofano','id_estado'], 'integer'],
-            [['fecha_desde','fecha_hasta','fecha_programada', 'hora_inicio','procedimiento', 'ayudantes', 'lado', 'fecha_cirugia', 'observacion', 'diagnostico', 'material_protesis','cant_tiempo', 'otro_equpo','paciente','medico'], 'safe'],
+            [['id', 'id_paciente', 'id_medico',  'id_anestesia',  'id_quirofano','id_estado', 'id_anestesiologo'], 'integer'],
+            [['fecha_desde','fecha_hasta','fecha_programada', 'hora_inicio','procedimiento', 'ayudantes', 'lado', 'fecha_cirugia', 'observacion', 'diagnostico', 'material_protesis','cant_tiempo', 'otro_equpo','paciente','medico','hora_fin'], 'safe'],
             ['fecha_programada', 'date', 'format' => 'dd/MM/yyyy'],
             ['fecha_cirugia', 'date', 'format' => 'dd/MM/yyyy'],
 
@@ -78,7 +78,8 @@ class CirugiaprogramadaSearch extends Cirugiaprogramada
             'fecha_cirugia' => $this->fecha_cirugia,
             'id_estado' => $this->id_estado,
             'id_quirofano' => $this->id_quirofano,
-
+           'id_anestesiologo' => $this->id_anestesiologo,
+             'hora_fin' => $this->hora_fin,
         ]);
 
         if (is_numeric($this->paciente)){

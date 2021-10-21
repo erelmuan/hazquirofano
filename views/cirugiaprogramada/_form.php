@@ -57,10 +57,10 @@ CrudAsset::register($this);
       <button type="button" class ="btn btn-primary btn-xs" onclick='pacienteba();'>Buscar y añadir</button>
     </br>
       <label> Paciente </label><span id="asterisco" >*</span></br>
-      <input id="cirugia-paciente"  style="width:250px;" value='<?=($model->paciente)?$model->paciente->apellido.", ".$model->paciente->nombre:''; ?>' type="text" readonly>
+      <input id="cirugia-paciente"  style="width:250px"; value='<?=($model->paciente)?$model->paciente->apellido.", ".$model->paciente->nombre:''; ?>' type="text" readonly>
     <?=$form->field($model, 'id_paciente')->hiddenInput()->label(false); ?>
 
-    <? if (isset($cargador)){ ?>
+    <? if ($cargador){ ?>
       <label >Medico: <span id='medico'> </span>
         <button title="Busqueda avanzada de medico" type="button" class="btn btn-primary btn-xs" data-toggle="modal" data-target=".bs-medico-modal-lg" style="margin-left: 10px;"><i class="glyphicon glyphicon-search" ></i></button>
       </label>
@@ -69,6 +69,7 @@ CrudAsset::register($this);
     </br>
     <?} ?>
       <?= $form->field($model, 'ayudantes')->textInput() ?>
+
       </div>
       <div class='col-sm-3'>
 
@@ -79,7 +80,7 @@ CrudAsset::register($this);
       <?=$form->field($model, 'id_medico')->hiddenInput(['value'=>($medico)?$medico->id:""])->label(false); ?>
 
       <?=$form->field($model, 'procedimiento')->textInput() ?>
-
+ 	   <?= $form->field($model, 'hora_fin')->textInput(['readonly' => true ]) ?>
         </div>
 
 
@@ -90,15 +91,32 @@ CrudAsset::register($this);
               );
               ?>
               <?= $form->field($model, 'id_anestesia')->dropDownList($model->getAnestesias())->label('Tipo de anestesia') ;?>
+              <?
+                     echo ( Html::label('Quirofano', 'macro', ['class' => 'control-label has-star']));
 
+                       echo Select2::widget( [
+                                  'name' => 'Cirugiaprogramada[id_quirofano]',
+                                  'value' => $model->id_quirofano,
+                                  'data' =>  ArrayHelper::map($model->quirofanos($dia) , 'id','nombre'),
+                                   'language' => 'es',
+                                  'options' => [
+                                    // 'value' => 1,
+                                  'onchange' => 'onEnviarQuir(this.value,"'.$dia.'",'.$model->id.')',
+                                  // 'placeholder' => 'Seleccionar código..',
+                                  'multiple' => false
+                                     ],
+                                  'pluginOptions' => [
+                                   'allowClear' => true
+                                         ],
+                         ]);
+
+                   ?>
               </div>
               <div class='col-sm-3'>
-                <?= $form->field($model, 'cant_tiempo')->dropDownList($model->getCantTiempo())->label('Cantidad de tiempo') ;?>
+                <?= $form->field($model, 'cant_tiempo')->dropDownList($model->getCantTiempo(),  ['onchange'=>'horarioFinal(this.value)'])->label('Cantidad de tiempo') ;?>
                 <?=$form->field($model, 'hora_inicio')->textInput(['readonly' => true ,'value' => $tiempo])->label('Hora de inicio');  ?>
 
               <?= $form->field($model, 'diagnostico')->textInput(); ?>
-
-              <?//= $form->field($model, 'equipo')->textInput(['value'=>($model->equipo)?$model->materialginecologico->pap_previo:''])->label('Pap previo') ?>
 
             </div>
             <div class='col-md-12'>
@@ -120,7 +138,7 @@ CrudAsset::register($this);
                     'label'=>$label,
                     'class' =>"flat",
                  // 'disabled' => $label==='seeeee',
-                 'disabled' => strpos($label, "(No disponible)"),
+                 'disabled' => strpos($label, "(No disponible)") ||  strpos($label, "(Reservado x esp)"),
                 'index'=>$index,
               ]);
           }
@@ -135,28 +153,7 @@ CrudAsset::register($this);
         <div class='col-md-6'>
         <?=$form->field($model,"material_protesis")->textInput();?>
        </div>
-       <div class='col-md-3'>
-         <?
-                echo ( Html::label('Quirofano', 'macro', ['class' => 'control-label has-star']));
 
-                  echo Select2::widget( [
-                             'name' => 'Cirugiaprogramada[id_quirofano]',
-                             'value' => $model->id_quirofano,
-                             'data' => $model->quirofanos,
-                              'language' => 'es',
-                             'options' => [
-                               // 'value' => 1,
-                             'onchange' => 'onEnviarQuir(this.value,"'.$dia.'",'.$model->id.')',
-                             // 'placeholder' => 'Seleccionar código..',
-                             'multiple' => false
-                                ],
-                             'pluginOptions' => [
-                              'allowClear' => true
-                                    ],
-                    ]);
-
-              ?>
-          </div>
          <div class='col-md-12'>
            <label> Observaciones </label>
          <?
@@ -180,17 +177,26 @@ CrudAsset::register($this);
          }
          ])
          ?>
+         <!-- <div class='col-md-3'> -->
+             <!-- <label> Anestesiologo </label> </br>
+             <input id="cirugia-anestesiologo" class="form-control" style="width:250px;" value='<?//= isset($quirofano)?$quirofano->anestesiologo->nombre:$model->anestesiologo->nombre ?>' type="text" readonly>
+             <?//=$form->field($model, 'id_anestesiologo')->hiddenInput(['value'=>isset($quirofano)?$quirofano->anestesiologo->id :$model->anestesiologo->id])->label(false); ?>
+             </div> -->
+              <div class='col-md-6'>
+                <?=$form->field($model,"observacion")->textInput()->label("Detalles");?>
+             </div>
+        <!-- </div> -->
 
-         </div>
-          <div class='col-md-6'>
-            <?=$form->field($model,"observacion")->textInput()->label("Observacion(Detalles)");?>
-         </div>
          <div class='col-md-3'>
            <? if (!isset($model->id_estado)){
                 echo $form->field($model, 'id_estado')->hiddenInput(['value'=>1])->label(false);
-           } else {?>
-           <? echo $form->field($model, 'id_estado')->dropDownList($model->getEstados())->label('Estado') ;
-           }?>
+           } elseif( $model->id_estado==2 || $model->id_estado==3  ) {
+                echo $form->field($model, 'estado')->textInput(['readonly' => true ,'value' => $model->estado->descripcion])->label('Estado');
+             }else {
+               echo $form->field($model, 'id_estado')->dropDownList($model->getEstados())->label('Estado') ;
+
+             }
+           ?>
           </div>
          <div class="x_content">
                <div class="modal fade bs-paciente-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
@@ -226,7 +232,7 @@ CrudAsset::register($this);
              </div>
          </div>
        </div>
-    <? if (isset($cargador)){ ?>
+    <? if ($cargador){ ?>
        <div class="x_content">
              <div class="modal fade bs-medico-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
                <div class="modal-dialog modal-lg">
@@ -278,6 +284,32 @@ CrudAsset::register($this);
 <?php Modal::end(); ?>
 
 <script>
+  function agregarCero(i) {
+    if (i < 10) {
+      i = "0" + i;
+    }
+    return i;
+  }
+window.onload =  horarioFinal(document.getElementById("cirugiaprogramada-cant_tiempo").value);
+
+ function horarioFinal(inter_hora){
+
+     let hora_inicio= document.getElementById("cirugiaprogramada-hora_inicio").value;
+
+     var hora1 = (inter_hora).split(":"),
+        hora2 = (hora_inicio).split(":"),
+        t1 = new Date(),
+        t2 = new Date();
+
+    t1.setHours(hora1[0], hora1[1], hora1[2]);
+    t2.setHours(hora2[0], hora2[1], hora2[2]);
+
+    //Aquí hago la resta
+    t1.setHours(t1.getHours() + t2.getHours(), t1.getMinutes() + t2.getMinutes(), t1.getSeconds() + t2.getSeconds());
+    hora_final= agregarCero(t1.getHours()) +":"+agregarCero(t1.getMinutes()) +":"+agregarCero(t1.getSeconds());
+    document.getElementById("cirugiaprogramada-hora_fin").value = hora_final;
+
+ }
 function onEnviarQuir(val1,val2,val3)
  {
      $.ajax({
@@ -287,9 +319,12 @@ function onEnviarQuir(val1,val2,val3)
         success: function (data) {
             var content = JSON.parse(data);
            document.getElementById("cirugiaprogramada-hora_inicio").value= content[0];
+           horarioFinal(document.getElementById("cirugiaprogramada-cant_tiempo").value);
         }
 
    });
+
+
  }
 
 function pacienteba(){

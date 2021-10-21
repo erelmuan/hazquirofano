@@ -7,11 +7,17 @@ use app\models\Quirofano;
 use app\models\QuirofanoSearch;
 use app\models\Anestesiologo;
 use app\models\AnestesiologoSearch;
+use app\models\QuirofanoAnestesiologoSearch;
+use app\models\QuirofanoAnestesiologo;
+
+
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use \yii\web\Response;
 use yii\helpers\Html;
+use yii\helpers\Json;
+use app\components\Metodos\Metodos;
 
 /**
  * QuirofanoController implements the CRUD actions for Quirofano model.
@@ -190,4 +196,120 @@ class QuirofanoController extends Controller
             throw new NotFoundHttpException('The requested page does not exist.');
         }
     }
+
+  public function  actionAnestesiologoajax(){
+      if (Yii::$app->request->isAjax) {
+        $out = [];
+        if (isset($_POST['id'])) {
+
+            $data = Yii::$app->request->post();
+            $id= explode(":", $data['id']);
+            $quirofano= $this->findModel($id) ;
+          $id_anestesiologo= $quirofano->anestesiologo->id;
+          $anestesiologo= $quirofano->anestesiologo->nombre;
+          echo Json::encode([$id_anestesiologo,$anestesiologo]);
+          return;
+
+        }
+      }
+    }
+
+    public function actionListdetalle()
+    {
+
+        if (isset($_POST['expandRowKey'])) {
+
+            $searchModel = new QuirofanoAnestesiologoSearch();
+            $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+            $dataProvider->query->where(['id_quirofano' => $_POST['expandRowKey']]);
+
+            $dataProvider->setPagination(false);
+            $dataProvider->setSort(false);
+
+            return $this->renderPartial('_listDetalle', [
+                'id_maestro' => $_POST['expandRowKey'],
+                'searchModel' => $searchModel,
+                'dataProvider' => $dataProvider,
+            ]);
+
+        } else {
+            return '<div>No se encontraron resultados</div>';
+        }
+    }
+
+
+    public function actionAddnombre(){
+
+          if (isset($_POST['keylist']) AND isset($_POST['id_quirofano'])) {
+
+              $lerror = false;
+              $id_quirofano = $_POST['id_quirofano'];
+
+              foreach ($_POST['keylist'] as $value) {
+
+                  if ($modelQuirofanoAnestesiologo= new QuirofanoAnestesiologo()) {
+
+                      $modelQuirofanoAnestesiologo->id_quirofano = $id_quirofano;
+                      $modelQuirofanoAnestesiologo->id_anestesiologo = $value;
+                      if (!$modelQuirofanoAnestesiologo->save()) {
+                          $lerror = true;
+                          break;
+                      }
+                  } else {
+                      $lerror = true;
+                      break;
+                  }
+
+              }
+              Yii::$app->response->format = Response::FORMAT_JSON;
+
+              if ($lerror) {
+                  return ['status' => 'error'];
+              }
+              return ['status' => 'success'];
+
+              Yii::$app->end();
+          }
+
+          $modelDetalle = new Anestesiologo();
+          $searchModel = new AnestesiologoSearch();
+          $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+          $columnas = Metodos::obtenerColumnas($modelDetalle);
+
+                Yii::$app->response->format = Response::FORMAT_JSON;
+              return [
+                  'title' => 'Agregar Anestesiologo',
+                  'content' => $this->renderAjax('_addnombre', [
+                      'searchModel' => $searchModel,
+                      'dataProvider' => $dataProvider,
+                      'columns' => $columnas,
+                      'id_quirofano' => $_GET['id_maestro'],
+                  ]),
+
+              ];
+
+        }
+        public function actionDeletedetalle($id_detalle, $id_maestro)
+        {
+
+            Yii::$app->response->format = Response::FORMAT_JSON;
+
+            try {
+                if ($modelQuirofanoAnestesiologo = QuirofanoAnestesiologo::findOne($id_detalle)) {
+                    // borro registro en este caso por que es una relacion NN
+                    if ($modelQuirofanoAnestesiologo->delete())
+                        // return ['forceClose'=>true,'forceReload'=>'#crud-datatable-pjax'];
+                        return ['forceClose' => true, 'success' => 'reloadDetalle(' . $id_maestro . ')'];
+
+                }
+            } catch (yii\db\Exception $e) {
+                return ['forceClose' => false,
+                    'title' => '<p style="color:red">ERROR</p>',
+                    'content' => '<div style=" font-size: 14px">Errores en la operacion indicada. Verifique.</div>',
+                    'success' => 'reloadDetalle(' . $id_maestro . ')'];
+            }
+
+        }
+
+
 }
