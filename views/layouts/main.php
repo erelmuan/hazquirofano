@@ -40,6 +40,7 @@ $bundle = yiister\gentelella\assets\Asset::register($this);
      <!-- efecto sobre los modulos  -->
      <?= Html::cssFile('@web/css/animate.min.css') ?>
      <?= Html::jsFile('@web/js/jquery.min.js') ?>
+
      <!-- Modal para que muestra el protocolo -->
 
      <?= Html::jsFile('@web/js/sweetalert2.all.min.js') ?>

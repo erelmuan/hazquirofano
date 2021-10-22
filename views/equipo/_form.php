@@ -10,8 +10,12 @@ use yii\widgets\ActiveForm;
 <div class="equipo-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'descripcion')->textInput(['maxlength' => true]) ?>
+    <? if($model->cirugias()){
+        echo  $form->field($model, 'descripcion')->input("text",['readonly' => true])->label('Descripcion') ;
+      }else {
+        echo  $form->field($model, 'descripcion')->textInput(['maxlength' => true]);
+      }
+    ?>
 
     <?= $form->field($model, 'dias')->textInput() ?>
 

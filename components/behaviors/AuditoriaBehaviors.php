@@ -17,6 +17,10 @@ class AuditoriaBehaviors extends Behavior
 
     public function beforeUpdate($event)
     {
+
+
+      // PRIMERO ME FIJO SI ES UNA CIRUGIA PROGRAMADA
+
       //NO ESTA FUNCIONANDO EN LAS BIOPSIAS CUANDO ACTUALIZO ME MUESTRA QUE SE MODIFICO LA MACROSCOPIA MICROSCOPIA AUN CUANDO NO SE HALLAN MODIFICADO
 $differences = array_diff($this->owner->getOldAttributes(), $this->owner->getAttributes());
       if (!empty($differences)){

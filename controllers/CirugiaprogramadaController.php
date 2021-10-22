@@ -634,7 +634,7 @@ class CirugiaprogramadaController extends Controller
         $dataProviderMed->pagination->pageSize=7;
         $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
         $listobs= ArrayHelper::map(Observacionquirurgica::find()->where('activo = true')->all(), 'id', 'descripcion');
-        
+
       if($this->request->isPost ){
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
@@ -665,11 +665,16 @@ class CirugiaprogramadaController extends Controller
               $model->actualizarHora();
         }
         if ($model->load($this->request->post()) && $model->save()) {
+          $cirEquiposBase= ArrayHelper::map(Cirugiaequipo::find()->where('id_cirugiaprogramada = '.$model->id)->all(), 'id', 'descripcion');
 
-            Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
-            ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
-            $this->cargarObservaciones($obsquir,$model);
-            $this->cargarEquipos($cirugiaequipos,$model);
+          $differences = array_diff($cirEquiposBase, $cirugiaequipos);
+                if (!empty($differences)){
+
+              }
+            // Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
+            // ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
+            // $this->cargarObservaciones($obsquir,$model);
+            // $this->cargarEquipos($cirugiaequipos,$model);
 
             $quirofano= Quirofano::find()->where(['id'=>$_POST["Cirugiaprogramada"]["id_quirofano"]])->one();
             if($quirofano->necesita_anestesiologo){

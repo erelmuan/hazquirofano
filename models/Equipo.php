@@ -81,4 +81,18 @@ class Equipo extends \yii\db\ActiveRecord
          return ArrayHelper::map(Especialidad::find()->orderBy(['id'=>SORT_ASC])->all(), 'id','profesion');
 
      }
+     public function cirugias(){
+
+         if (!isset($this->id))
+           return false;
+       $id= $this->id;
+       $tienecirugia= Cirugiaequipo::find()
+        ->where(['and', "id_equipo=".$id])
+        ->count('*');
+        if ($tienecirugia >0)
+            return true;
+
+
+       return false;
+     }
 }
