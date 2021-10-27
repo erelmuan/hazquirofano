@@ -36,6 +36,7 @@ use yii\helpers\ArrayHelper;
 use kartik\widgets\Growl;
 use app\models\Quirofano;
 
+use app\models\Auditoria;
 
 /**
  * CirugiaprogramadaController implements the CRUD actions for Cirugiaprogramada model.
@@ -134,13 +135,7 @@ class CirugiaprogramadaController extends Controller
 
      }else {
        $anestesiologo =$quirofano->anestesiologo($this->dia_semanal($dia),$quirofano->id );
-       //  Anestesiologo::find()
-       // ->leftJoin('quirofano_anestesiologo', 'anestesiologo.id = quirofano_anestesiologo.id_anestesiologo')
-       // ->leftJoin('anestesiologo_semana', 'anestesiologo_semana.id_anestesiologo =anestesiologo.id')
-       // ->leftJoin('dias_semanales', 'dias_semanales.id = anestesiologo_semana.id_semana')
-       // ->where(['and',"dias_semanales.dia='".$this->dia_semanal($dia).
-       // "' and quirofano_anestesiologo.id_quirofano=".$quirofano->id ])
-       // ->one();
+
        $sumTiempo='00:00:00';
        foreach ( $anestesiologo->quirofanoAnestesiologos as $quirofanoAnestesiologo) {
 
@@ -244,52 +239,40 @@ class CirugiaprogramadaController extends Controller
          return $nombre_del_dia;
 
      }
+     public function setearMensaje($mensaje){
+       Yii::$app->getSession()->setFlash('warning', [
+           'type' => 'danger',
+           'duration' => 5000,
+           'icon' => 'fa fa-warning',
+           'message' => $mensaje,
+           'title' => 'NOTIFICACIÓN',
+           'positonY' => 'top',
+           'positonX' => 'right'
+       ]);
+
+     }
 
 
-     public function validarAntes($dia, $model, $accion,$cargador){
+  public function validarAntes($dia, $model, $accion,$cargador){
        // Primero validar si tiene medico asociado
        $cirugiaprogramada = new Cirugiaprogramada();
 
        if ($cirugiaprogramada->quirofanos($dia)== null){
-         Yii::$app->getSession()->setFlash('warning', [
-             'type' => 'danger',
-             'duration' => 5000,
-             'icon' => 'fa fa-warning',
-             'message' => 'DEBE PARAMETRIZAR LOS QUIROFANOS.',
-             'title' => 'NOTIFICACIÓN',
-             'positonY' => 'top',
-             'positonX' => 'right'
-         ]);
+         $this->setearMensaje('DEBE PARAMETRIZAR LOS QUIROFANOS.');
          return false;
        }
 
        $tieneMedico= Medico::find()->where(['id_usuario' => Yii::$app->user->identity->id ])->count();
          if ($tieneMedico == 0 && !$cargador){
-           Yii::$app->getSession()->setFlash('warning', [
-               'type' => 'danger',
-               'duration' => 5000,
-               'icon' => 'fa fa-warning',
-               'message' => 'NO HAY MEDICO ASOCIADO AL USUARIO.',
-               'title' => 'NOTIFICACIÓN',
-               'positonY' => 'top',
-               'positonX' => 'right'
-           ]);
+           $this->setearMensaje('NO HAY MEDICO ASOCIADO AL USUARIO.');
            return false;
          }
 
          //Validar que el medico que quiere modificar es el mismo que esta accediendo
 
          if ( $accion=="update"  && $model->medico->id_usuario !== Yii::$app->user->identity->id && !$cargador){
-           Yii::$app->getSession()->setFlash('warning', [
-               'type' => 'danger',
-               'duration' => 5000,
-               'icon' => 'fa fa-warning',
-               'message' => 'LA CIRUGIA PERTENECE A OTRO MEDICO.',
-               'title' => 'NOTIFICACIÓN',
-               'positonY' => 'top',
-               'positonX' => 'right'
-           ]);
-           return false;
+            $this->setearMensaje('LA CIRUGIA PERTENECE A OTRO MEDICO.');
+            return false;
          }
          // SOLO PARA EL CREATE validar que el dia tiene que ser mayor al actualiza
          //Se deja a lo ultimo este metodo es usado tambien por el updateParametros
@@ -297,15 +280,7 @@ class CirugiaprogramadaController extends Controller
 
          $fechahoy=date('Y-m-d');
          if($accion=="create"  && $fechahoy>=$dia ){
-           Yii::$app->getSession()->setFlash('warning', [
-               'type' => 'danger',
-               'duration' => 5000,
-               'icon' => 'fa fa-warning',
-               'message' => 'LA FECHA CIRUGÍA DEBE SER MAYOR AL DÍA ACTUAL.',
-               'title' => 'NOTIFICACIÓN',
-               'positonY' => 'top',
-               'positonX' => 'right'
-           ]);
+           $this->setearMensaje('LA FECHA CIRUGÍA DEBE SER MAYOR AL DÍA ACTUAL.');
            return false;
          }
          $parametrizacion= Parametrizacion::find()->one();
@@ -316,15 +291,7 @@ class CirugiaprogramadaController extends Controller
           $fecha_limite_form = date('d/m/Y', $date_max);
 
          if ($dia >= $fecha_limite ){
-           Yii::$app->getSession()->setFlash('warning', [
-               'type' => 'danger',
-               'duration' => 5000,
-               'icon' => 'fa fa-warning',
-               'message' => 'LA FECHA LIMITE ES EL '.$fecha_limite_form,
-               'title' => 'NOTIFICACIÓN',
-               'positonY' => 'top',
-               'positonX' => 'right'
-           ]);
+           $this->setearMensaje('LA FECHA LIMITE ES EL '.$fecha_limite_form);
            return false;
 
          }
@@ -333,15 +300,7 @@ class CirugiaprogramadaController extends Controller
          andWhere(["and","fecha ='".$dia."'"])->one();
 
          if ($dia_sin_cirugias ){
-           Yii::$app->getSession()->setFlash('warning', [
-               'type' => 'danger',
-               'duration' => 5000,
-               'icon' => 'fa fa-warning',
-               'message' => 'LA FECHA NO ESTA DISPONIBLE PARA CIRUGIAS',
-               'title' => 'NOTIFICACIÓN',
-               'positonY' => 'top',
-               'positonX' => 'right'
-           ]);
+           $this->setearMensaje('LA FECHA NO ESTA DISPONIBLE PARA CIRUGIAS');
            return false;
 
          }
@@ -360,15 +319,8 @@ class CirugiaprogramadaController extends Controller
            }
          }
        if(!$cargador &&!$permitido_dia){
-          Yii::$app->getSession()->setFlash('warning', [
-              'type' => 'danger',
-              'duration' => 5000,
-              'icon' => 'fa fa-warning',
-              'message' => 'LA ESPECIALIDAD DEL PROFESIONAL, NO TIENE HABILITADA EL DIA '.$dia_semanal,
-              'title' => 'NOTIFICACIÓN',
-              'positonY' => 'top',
-              'positonX' => 'right'
-          ]);
+          $this->setearMensaje('LA ESPECIALIDAD DEL PROFESIONAL, NO TIENE HABILITADA EL DIA '.$dia_semanal);
+
           return false;
        }
 
@@ -377,42 +329,18 @@ class CirugiaprogramadaController extends Controller
 
      public function validarDespues($datos, $model){
                  if (!isset($datos["observacionquirurgica"]) ){
-                   Yii::$app->getSession()->setFlash('warning', [
-                       'type' => 'danger',
-                       'duration' => 5000,
-                       'icon' => 'fa fa-warning',
-                       'message' => 'DEBE SELECCIONAR ALGUNA OBSERVACIÓN',
-                       'title' => 'NOTIFICACIÓN',
-                       'positonY' => 'top',
-                       'positonX' => 'right'
-                   ]);
+                   $this->setearMensaje( 'DEBE SELECCIONAR ALGUNA OBSERVACIÓN');
                    return false;
 
                  }
                  if (!isset($datos["cirugiaequipos"]) && ($datos["Cirugiaprogramada"]["otro_equpo"])=="" ){
-                   Yii::$app->getSession()->setFlash('warning', [
-                       'type' => 'danger',
-                       'duration' => 5000,
-                       'icon' => 'fa fa-warning',
-                       'message' => 'DEBE SELECCIONAR ALGÚN EQUIPO',
-                       'title' => 'NOTIFICACIÓN',
-                       'positonY' => 'top',
-                       'positonX' => 'right'
-                   ]);
+                   $this->setearMensaje( 'DEBE SELECCIONAR ALGÚN EQUIPO');
                    return false;
                  }
                  $parametrizacion= Parametrizacion::find()->one();
 
                  if ($datos["Cirugiaprogramada"]["hora_inicio"] === $parametrizacion->hora_final ){
-                   Yii::$app->getSession()->setFlash('warning', [
-                       'type' => 'danger',
-                       'duration' => 5000,
-                       'icon' => 'fa fa-warning',
-                       'message' => 'EL QUIROFANO ESTA TOTALMENTE OCUPADO',
-                       'title' => 'NOTIFICACIÓN',
-                       'positonY' => 'top',
-                       'positonX' => 'right'
-                   ]);
+                   $this->setearMensaje( 'EL QUIROFANO ESTA TOTALMENTE OCUPADO');
                    return false;
 
                  }
@@ -426,15 +354,7 @@ class CirugiaprogramadaController extends Controller
                  $horas_usadas= gmdate("H:i:s", $cantTiempo);
 
                  if ($horas_usadas > $parametrizacion->hora_final ){
-                   Yii::$app->getSession()->setFlash('warning', [
-                       'type' => 'danger',
-                       'duration' => 5000,
-                       'icon' => 'fa fa-warning',
-                       'message' => 'EXCEDE LA HORA FINAL PERMITIDA '.$parametrizacion->hora_final,
-                       'title' => 'NOTIFICACIÓN',
-                       'positonY' => 'top',
-                       'positonX' => 'right'
-                   ]);
+                   $this->setearMensaje('EXCEDE LA HORA FINAL PERMITIDA '.$parametrizacion->hora_final);
                    return false;
 
                  }
@@ -451,31 +371,16 @@ class CirugiaprogramadaController extends Controller
                   }
               }
             if(!$permitido_dia){
-               Yii::$app->getSession()->setFlash('warning', [
-                   'type' => 'danger',
-                   'duration' => 5000,
-                   'icon' => 'fa fa-warning',
-                   'message' => 'LA ESPECIALIDAD DEL PROFESIONAL, NO TIENE HABILITADA EL DIA '.$dia_semanal,
-                   'title' => 'NOTIFICACIÓN',
-                   'positonY' => 'top',
-                   'positonX' => 'right'
-               ]);
+              $this->setearMensaje('LA ESPECIALIDAD DEL PROFESIONAL, NO TIENE HABILITADA EL DIA '.$dia_semanal);
                return false;
             }
              if ($model !==NULL  && ($datos["Cirugiaprogramada"]["hora_inicio"] != $model->horaInicio()) && ($datos["Cirugiaprogramada"]["hora_fin"] > $model->horaInicio())){
-                  Yii::$app->getSession()->setFlash('warning', [
-                          'type' => 'danger',
-                          'duration' => 5000,
-                          'icon' => 'fa fa-warning',
-                          'message' => 'LA HORA ESTABLECIDA DE LA CIRUGIA ESTA SUPERPUESTA CON OTRA.',
-                          'title' => 'NOTIFICACIÓN',
-                          'positonY' => 'top',
-                          'positonX' => 'right'
-                      ]);
-                      return false;
+                 $this->setearMensaje('LA HORA ESTABLECIDA DE LA CIRUGIA ESTA SUPERPUESTA CON OTRA.');
+                return false;
 
               }
-              return true;
+
+            return true;
 
     }
 
@@ -496,11 +401,123 @@ class CirugiaprogramadaController extends Controller
         $modelCirugiaEquipo->save();
       }
     }
+    public function actualizarEquipo($diffMenosEquipo,$diffMasEquipo,$model){
+      foreach ($diffMenosEquipo as $key => $id_equipo) {
+        $modelCirugiaEquipo = Cirugiaequipo::find()->where(["and","id_cirugiaprogramada =".$model->id." and  id_equipo=".$id_equipo])->one();
+        $modelCirugiaEquipo->delete();
+      }
+      foreach ($diffMasEquipo as $key => $id_equipo) {
+        $modelCirugiaEquipo = new Cirugiaequipo();
+        $modelCirugiaEquipo->id_cirugiaprogramada=$model->id;
+        $modelCirugiaEquipo->id_equipo=$id_equipo;
+        $modelCirugiaEquipo->save();
+      }
+
+    }
+    public function actualizarObservacion($diffMenosObservacion,$diffMasObservacion,$model){
+      foreach ($diffMenosObservacion as $key => $id_observacion) {
+        $modelobservacion_cirugia = ObservacionCirugia::find()->where(["and","id_cirugiaprogramada =".$model->id." and  id_observacionquirurgica=".$id_observacion])->one();
+        $modelobservacion_cirugia->delete();
+      }
+      foreach ($diffMasObservacion as $key => $id_observacion) {
+        $modelobservacion_cirugia = new ObservacionCirugia();
+        $modelobservacion_cirugia->id_cirugiaprogramada=$model->id;
+        $modelobservacion_cirugia->id_observacionquirurgica=$id_observacion;
+        $modelobservacion_cirugia->save();
+      }
+
+    }
 
 
-    public function actionCreate($dia)
-    {
+    public function auditoriaCir($diffMasEquipo,$diffMenosEquipo ,$model ,$cloneModel ,$diffMasObservacion,$diffMenosObservacion){
+        $despuesEquipos = "";
+        $antesEquipos = "";
+        $despuesObservacion = "";
+        $antesObservacion = "";
 
+        if (!empty($diffMasEquipo) || !empty($diffMenosEquipo) ){
+          $cant=1;
+          foreach ($model->cirugiaequipos as $cirequpAntes){
+              $antesEquipos .="<b>".$cant.":</b>". $cirequpAntes->equipo->descripcion."<br>";
+              $cant++;
+          }
+          $this->actualizarEquipo($diffMenosEquipo,$diffMasEquipo,$model);
+            $cant=1;
+            $modelActualizado = Cirugiaprogramada::find()->where(["and","id =".$model->id])->one();
+
+            foreach ($modelActualizado->cirugiaequipos as $cirequpDespues) {
+                $despuesEquipos .="<b>".$cant.":</b>". $cirequpDespues->equipo->descripcion."<br>";
+                $cant++;
+            }
+
+        }
+
+        if (!empty($diffMasObservacion) || !empty($diffMenosObservacion) ){
+          $cant=1;
+          foreach ($model->observacionCirugias as $observCirAntes){
+              $antesObservacion .="<b>".$cant.":</b>". $observCirAntes->observacionquirurgica->descripcion."<br>";
+              $cant++;
+          }
+            $this->actualizarObservacion($diffMenosObservacion,$diffMasObservacion,$model);
+
+            $cant=1;
+            $modelActualizado = Cirugiaprogramada::find()->where(["and","id =".$model->id])->one();
+
+            foreach ($modelActualizado->observacionCirugias as $observCirDespues) {
+                $despuesObservacion .="<b>".$cant.":</b>". $observCirDespues->observacionquirurgica->descripcion."<br>";
+                $cant++;
+            }
+
+        }
+
+
+        $differences = array_diff($cloneModel->getOldAttributes(), $model->getAttributes());
+        if (  $despuesEquipos !=="" || !empty($differences) ||  $despuesObservacion!=="" ){
+          $log=new Auditoria();
+          $log->id_usuario= Yii::$app->user->identity->id_user;
+          $log->accion= "MODIFICACIÓN";
+          $log->tabla=  "Cirugiaprogramada";
+          $log->fecha= date("d/m/Y");
+          $log->hora= date("H:i:s");
+          $log->ip=  $_SERVER['REMOTE_ADDR'];
+          $log->informacion_usuario= $_SERVER['HTTP_USER_AGENT'];
+            // new attributes
+              $newattributes = $model->getAttributes();
+              $oldattributes = $cloneModel->getOldAttributes();
+            // compare old and new
+             $changes="";
+             foreach ($newattributes as $name => $value) {
+                if (!empty($oldattributes)) {
+                    $old = $oldattributes[$name];
+                    } else {
+                          $old = '';
+                    }
+                    if ($value != $old) {
+                       $changes = $changes .$name .' (Antes)='.$old.'</br>'.$name.' (Después)='. $value.'</br>';
+                      }
+              }
+              if (  $despuesEquipos !=="" ){
+                      $changes = $changes .'Equipos  (Antes)= </br>'.$antesEquipos.'</br> Equipos (Después)= </br>'. $despuesEquipos.'</br>';
+                }
+              if (  $despuesObservacion !=="" ){
+                    $changes = $changes .'Observacion  (Antes)= </br>'.$antesObservacion.'</br> Observacion (Después)= </br>'. $despuesObservacion.'</br>';
+              }
+
+
+            $registro=  Html::a( "Ver", ["cirugiaprogramada/view","id"=>  $model->getPrimaryKey()]
+
+                ,[    'class' => 'text-success','title'=>'Datos', 'target'=>'_blank','data-toggle'=>'tooltip' ]
+               ).'</br>';
+
+          $log->cambios= "Registro modificado: " .$registro.$changes;
+
+          $log->save();
+        }
+
+    }
+
+
+    public function actionCreate($dia){
       //Verifico si es cargador de cir programadas sin ser medico
       $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
       $cargador= $usuario->isCargador();
@@ -605,8 +622,6 @@ class CirugiaprogramadaController extends Controller
              'equipos'=>$equipos,
              'observacion'=>$observacion
 
-
-
         ]);
     }
 
@@ -618,7 +633,8 @@ class CirugiaprogramadaController extends Controller
      * @throws NotFoundHttpException if the model cannot be found
      */
     public function actionUpdate($id){
-      //Verifico si es cargador de cir programadas sin ser medico
+      //Verifico si es cargador de cir programadas sin ser medicoV
+
         $usuario= Usuario::find()->where(['id'=>Yii::$app->user->identity->id])->one();
         $cargador= $usuario->isCargador();
         $model = $this->findModel($id);
@@ -634,7 +650,7 @@ class CirugiaprogramadaController extends Controller
         $dataProviderMed->pagination->pageSize=7;
         $list = $this->listadequipos($model->fecha_cirugia,$id,"update") ;
         $listobs= ArrayHelper::map(Observacionquirurgica::find()->where('activo = true')->all(), 'id', 'descripcion');
-
+        $clonedModel = clone $model;
       if($this->request->isPost ){
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
@@ -665,16 +681,16 @@ class CirugiaprogramadaController extends Controller
               $model->actualizarHora();
         }
         if ($model->load($this->request->post()) && $model->save()) {
-          $cirEquiposBase= ArrayHelper::map(Cirugiaequipo::find()->where('id_cirugiaprogramada = '.$model->id)->all(), 'id', 'descripcion');
+          $cirEquiposBase= ArrayHelper::map(Cirugiaequipo::find()->where('id_cirugiaprogramada = '.$model->id)->all(), 'id', 'id_equipo');
+          $cirObservacionBase= ArrayHelper::map(ObservacionCirugia::find()->where('id_cirugiaprogramada = '.$model->id)->all(), 'id', 'id_observacionquirurgica');
 
-          $differences = array_diff($cirEquiposBase, $cirugiaequipos);
-                if (!empty($differences)){
+          $diffMasEquipo = array_diff($cirugiaequipos ,$cirEquiposBase );
+          $diffMenosEquipo = array_diff($cirEquiposBase,$cirugiaequipos );
 
-              }
-            // Cirugiaequipo::deleteAll(['id_cirugiaprogramada'=>$id]);
-            // ObservacionCirugia::deleteAll(['id_cirugiaprogramada'=>$id]);
-            // $this->cargarObservaciones($obsquir,$model);
-            // $this->cargarEquipos($cirugiaequipos,$model);
+          $diffMasObservacion= array_diff($obsquir ,$cirObservacionBase );
+          $diffMenosObservacion = array_diff($cirObservacionBase,$obsquir );
+
+           $this->auditoriaCir($diffMasEquipo,$diffMenosEquipo ,$model ,$clonedModel ,$diffMasObservacion,$diffMenosObservacion );
 
             $quirofano= Quirofano::find()->where(['id'=>$_POST["Cirugiaprogramada"]["id_quirofano"]])->one();
             if($quirofano->necesita_anestesiologo){
@@ -862,7 +878,7 @@ class CirugiaprogramadaController extends Controller
           $dataProvider = $searchModel->searchdispo($this->request->queryParams);
         }
         //la fecha tiene que estar en formato d-m-y
-        function calcular_edad($id){
+    public function calcular_edad($id){
 
           $Solicitud =  Solicitud::findOne($id);
           list($ano,$mes,$dia) = explode("-",$Solicitud->paciente->fecha_nacimiento);

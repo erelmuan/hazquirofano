@@ -19,53 +19,50 @@ class AuditoriaBehaviors extends Behavior
     {
 
 
-      // PRIMERO ME FIJO SI ES UNA CIRUGIA PROGRAMADA
+      // SI ES CIRUGIA PROGRAMDA LO IGNORO- PORQUE LO VOY HACER DENTRO DE SU CONTROLADOR DEBIDO A SU PARTICULARIDAD CON LOS EQUIPOS Y OBSERVACIONES
 
-      //NO ESTA FUNCIONANDO EN LAS BIOPSIAS CUANDO ACTUALIZO ME MUESTRA QUE SE MODIFICO LA MACROSCOPIA MICROSCOPIA AUN CUANDO NO SE HALLAN MODIFICADO
-$differences = array_diff($this->owner->getOldAttributes(), $this->owner->getAttributes());
-      if (!empty($differences)){
-          $log=new Auditoria();
-          $log->id_usuario= Yii::$app->user->identity->id_user;
-          $log->accion= "MODIFICACIÓN";
+        $differences = array_diff($this->owner->getOldAttributes(), $this->owner->getAttributes());
           $tabla= substr(get_class($this->owner), 11);
-          $log->tabla=  $tabla;
-          $log->fecha= date("d/m/Y");
-          $log->hora= date("H:i:s");
-          $log->ip=  $_SERVER['REMOTE_ADDR'];
-          $log->informacion_usuario= $_SERVER['HTTP_USER_AGENT'];
-          $model=strtolower($tabla);
+          if (!empty($differences && $tabla !=="Cirugiaprogramada")){
+              $log=new Auditoria();
+              $log->id_usuario= Yii::$app->user->identity->id_user;
+              $log->accion= "MODIFICACIÓN";
+              // $tabla= substr(get_class($this->owner), 11);
+              $log->tabla=  $tabla;
+              $log->fecha= date("d/m/Y");
+              $log->hora= date("H:i:s");
+              $log->ip=  $_SERVER['REMOTE_ADDR'];
+              $log->informacion_usuario= $_SERVER['HTTP_USER_AGENT'];
+              $model=strtolower($tabla);
 
-                      // new attributes
-              $newattributes = $this->owner->getAttributes();
-              $oldattributes = $this->owner->getOldAttributes();
+                // new attributes
+                  $newattributes = $this->owner->getAttributes();
+                  $oldattributes = $this->owner->getOldAttributes();
+                // compare old and new
+                 $changes="";
+                 foreach ($newattributes as $name => $value) {
+                    if (!empty($oldattributes)) {
+                        $old = $oldattributes[$name];
+                        } else {
+                              $old = '';
+                        }
+                        if ($value != $old) {
+                           $changes = $changes .$name .' (Antes)='.$old.'</br>'.$name.' (Después)='. $value.'</br>';
 
-                      // compare old and new
+                          }
 
+                  }
+                $registro=  Html::a( "Ver", [$model."/view","id"=>  $this->owner->getPrimaryKey()]
 
-             $changes="";
-             foreach ($newattributes as $name => $value) {
-                if (!empty($oldattributes)) {
-                    $old = $oldattributes[$name];
-                    } else {
-                          $old = '';
-                    }
-                    if ($value != $old) {
-                       $changes = $changes .$name .' (Antes)='.$old.'</br>'.$name.' (Después)='. $value.'</br>';
-
-                      }
-
-              }
-            $registro=  Html::a( "Ver", [$model."/view","id"=>  $this->owner->getPrimaryKey()]
-
-                ,[    'class' => 'text-success','title'=>'Datos', 'target'=>'_blank','data-toggle'=>'tooltip' ]
-               ).'</br>';
+                    ,[    'class' => 'text-success','title'=>'Datos', 'target'=>'_blank','data-toggle'=>'tooltip' ]
+                   ).'</br>';
 
 
-          $log->cambios= "Registro modificado: " .$registro.$changes;
+              $log->cambios= "Registro modificado: " .$registro.$changes;
 
 
-          $log->save();
-        }
+              $log->save();
+            }
 
     }
 
