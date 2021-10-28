@@ -49,9 +49,7 @@ $this->title = 'Inicio';
             </div>
             <div class="count">2</div>
             <h3>CALENDARIO</h3>
-            <p>Información de las plantillas - ABM.</p>
-
-
+            <p>Alta de cirugias programadas.</p>
         </div>
       </div>
       </a>
@@ -63,7 +61,7 @@ $this->title = 'Inicio';
             <div class="count">3</div>
 
             <h3>CIR. PROGRAMADA</h3>
-            <p>Permisos-cambio de clave-roles.</p>
+            <p>Información de cir. programadas.</p>
           </div>
         </div>
       </a>
@@ -79,7 +77,7 @@ $this->title = 'Inicio';
         </div>
       </div>
       </a>
-      <!-- <a href=<?//=Yii::$app->homeUrl."?r=medico"; ?>>
+      <a href=<?=Yii::$app->homeUrl."?r=medico"; ?>>
       <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
         <div class="tile-stats">
           <div class="icon"><i class="fa fa-user-md"></i>
@@ -90,7 +88,7 @@ $this->title = 'Inicio';
           <p>Información de los medicos - ABM.</p>
         </div>
       </div>
-    </a> -->
+    </a>
 
       <a href=<?=Yii::$app->homeUrl."?r=parametrizacion/update&id=1"; ?>>
       <div class="animated flipInY col-lg-3 col-md-3 col-sm-6 col-xs-12">
@@ -100,7 +98,7 @@ $this->title = 'Inicio';
           <div class="count">32</div>
 
           <h3> PARAMETRIZACIÓN </h3>
-          <p>Información de las solicitudes - ABM.</p>
+          <p>Parametrización - ABM.</p>
         </div>
       </div>
       </a>
@@ -126,7 +124,7 @@ $this->title = 'Inicio';
               </div>
               <div class="count">2</div>
               <h3>CALENDARIO</h3>
-              <p>Información de las plantillas - ABM.</p>
+              <p>Alta de cirugias programadas.</p>
           </div>
         </div>
         </a>
@@ -138,7 +136,7 @@ $this->title = 'Inicio';
               <div class="count">3</div>
 
               <h3>CIR. PROGRAMADA</h3>
-              <p>Permisos-cambio de clave-roles.</p>
+              <p>Información de cir. programadas..</p>
             </div>
           </div>
         </a>
