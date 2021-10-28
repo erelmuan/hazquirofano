@@ -37,28 +37,7 @@ $this->title = 'Nueva cirugia programada';
 $this->params['breadcrumbs'][] = $this->title;
 
 CrudAsset::register($this);
-          if (!empty($diffMenos) || !empty($diffMas)){
-            // var_dump($cirEquiposBase);
-            // var_dump($cirEquiposBase);
-            // echo "HOLAAAAAAAAAA";
-            // var_dump($equipos);
-            // foreach ($diffMenos as $key => $id_equipo) {
-              // $modelCirugiaEquipo = Cirugiaequipo::find()
-              // ->where("and","id=281")
-              // ->one();
-              // $modelCirugiaEquipo = Cirugiaequipo::find()->where(["id"=>3])->one();
-              // $modelCirugiaEquipo = Cirugiaprogramada::find()
-              // ->where("and","id=84")
-              // ->one();
-              // echo $modelCirugiaEquipo->id;
-              echo"--------------";
-            // }
-            // echo "TIENE DE MENOS";
-            //
-            //   var_dump( $diffMenos);
-            //   echo "TIENE DE MAS";
-            //   var_dump($diffMas);
-          }
+
 ?>
 
 <div id="w0s" class="x_panel">

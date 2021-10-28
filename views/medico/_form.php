@@ -17,10 +17,18 @@ use yii\bootstrap\Modal;
 <div class="medico-form">
 
     <?php $form = ActiveForm::begin(); ?>
-
-    <?= $form->field($model, 'apellido')->input("text",['style'=> 'width:100%; text-transform:uppercase;']) ?>
-
-    <?= $form->field($model, 'nombre')->input("text",['style'=> 'width:100%; text-transform:uppercase;']) ?>
+    <? if($model->cirugiaprogramadas){
+        echo  $form->field($model, 'apellido')->input("text",['readonly' => true])->label('Apellido') ;
+      }else {
+        echo $form->field($model, 'apellido')->input("text",['style'=> 'width:100%; text-transform:uppercase;']);
+      }
+    ?>
+    <? if($model->cirugiaprogramadas){
+        echo  $form->field($model, 'nombre')->input("text",['readonly' => true])->label('Nombre') ;
+      }else {
+        echo $form->field($model, 'nombre')->input("text",['style'=> 'width:100%; text-transform:uppercase;']);
+      }
+    ?>
 
     <?= $form->field($model, 'id_tipodoc')->dropDownList($model->getTipodocs())->label('Tipo de documento') ;?>
 

@@ -92,12 +92,13 @@ function submitAddnombre(id_quirofano){
                 $('#ajaxCrudModal').modal('hide');
                 reloadDetalle(id_quirofano);
             }else{
-                $('#ajaxCrudModal .modal-dialog').css({'width':'600px'});
-                $('#ajaxCrudModal .modal-title')
-                    .html('<p style="color:red">ERROR</p>');
-                $('#ajaxCrudModal').modal('show')
-                    .find('#cruddetalle-datatable')
-                    .html(('<div style=" font-size: 14px">Errores en la operacion indicada. Verifique</div>'));
+                  $('#ajaxCrudModal .modal-dialog').css({'width':'600px'});
+                  $('#ajaxCrudModal .modal-title')
+                      .html('<p style="color:red">ERROR</p>');
+                  $('#ajaxCrudModal').modal('show')
+                      .find('#cruddetalle-datatable')
+                      .html(('<div style=" font-size: 14px">'+data.mensaje+ '</div>'));
+
             }
         }
     });

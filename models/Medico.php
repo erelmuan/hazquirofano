@@ -129,5 +129,5 @@ class Medico extends \yii\db\ActiveRecord
      public function getCirugiaprogramadas()
      {
         return $this->hasMany(Cirugiaprogramada::className(), ['id_medico' => 'id']);
-   }
+    }
 }

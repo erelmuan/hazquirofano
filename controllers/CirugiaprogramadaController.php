@@ -279,7 +279,7 @@ class CirugiaprogramadaController extends Controller
          // y en el mismo no hay restriccion  sobre el dia
 
          $fechahoy=date('Y-m-d');
-         if($accion=="create"  && $fechahoy>=$dia ){
+         if($accion=="create"  && $fechahoy>=$dia  ){
            $this->setearMensaje('LA FECHA CIRUGÍA DEBE SER MAYOR AL DÍA ACTUAL.');
            return false;
          }
@@ -327,7 +327,7 @@ class CirugiaprogramadaController extends Controller
        return true;
      }
 
-     public function validarDespues($datos, $model){
+     public function validarDespues($datos, $model ,$cargador){
                  if (!isset($datos["observacionquirurgica"]) ){
                    $this->setearMensaje( 'DEBE SELECCIONAR ALGUNA OBSERVACIÓN');
                    return false;
@@ -353,7 +353,7 @@ class CirugiaprogramadaController extends Controller
                  $cantTiempo += $parts2[2] + $parts2[1]*60 + $parts2[0]*3600;
                  $horas_usadas= gmdate("H:i:s", $cantTiempo);
 
-                 if ($horas_usadas > $parametrizacion->hora_final ){
+                 if ($horas_usadas > $parametrizacion->hora_final && !$cargador ){
                    $this->setearMensaje('EXCEDE LA HORA FINAL PERMITIDA '.$parametrizacion->hora_final);
                    return false;
 
@@ -556,7 +556,7 @@ class CirugiaprogramadaController extends Controller
             $observacion=array_values($obsquir);
             //Validacion despues de enviar los datos
 
-            if(!$this->validarDespues($_POST , null)){
+            if(!$this->validarDespues($_POST , null,$cargador)){
               $medico= Medico::findOne(['id' => $_POST["Cirugiaprogramada"]["id_medico"]]);
               $model->loadDefaultValues();
 
@@ -655,7 +655,7 @@ class CirugiaprogramadaController extends Controller
             (!isset($_POST["cirugiaequipos"]) )? $cirugiaequipos=[]: $cirugiaequipos=$_POST["cirugiaequipos"];
             (!isset($_POST["observacionquirurgica"]) )? $obsquir=[]: $obsquir=$_POST["observacionquirurgica"];
 
-          if(!$this->validarDespues($_POST,$model)){
+          if(!$this->validarDespues($_POST,$model,$cargador)){
 
             return $this->render('_form', [
               'model' => $model,

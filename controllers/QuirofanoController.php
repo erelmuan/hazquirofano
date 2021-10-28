@@ -9,6 +9,7 @@ use app\models\Anestesiologo;
 use app\models\AnestesiologoSearch;
 use app\models\QuirofanoAnestesiologoSearch;
 use app\models\QuirofanoAnestesiologo;
+use yii\helpers\ArrayHelper;
 
 
 use yii\web\Controller;
@@ -248,16 +249,37 @@ class QuirofanoController extends Controller
               foreach ($_POST['keylist'] as $value) {
 
                   if ($modelQuirofanoAnestesiologo= new QuirofanoAnestesiologo()) {
+                    $modelQuirofano = Quirofano::findOne($id_quirofano);
+                    $anestesiologo= Anestesiologo::findOne($value);
+
+                    $AnesSemanaAgregar = ArrayHelper::map($anestesiologo->anestesiologoSemanas, 'id', 'id_semana');
+                    $quirofanoAnestesiologos= $modelQuirofano->quirofanoAnestesiologos;
+
+
+                    foreach ($quirofanoAnestesiologos as $quirofanoAnestesiologo) {
+
+                        $AnesSemanaExistente =  ArrayHelper::map($quirofanoAnestesiologo->anestesiologo->anestesiologoSemanas, 'id', 'id_semana');;
+
+                        $result = array_intersect($AnesSemanaExistente, $AnesSemanaAgregar);
+                        if(!empty($result)){
+                            $lerror = true;
+                            $mensaje = 'Hay dos anestesiologos para el quirofano el mismo dia';
+
+                        }
+                    }
 
                       $modelQuirofanoAnestesiologo->id_quirofano = $id_quirofano;
                       $modelQuirofanoAnestesiologo->id_anestesiologo = $value;
-                      if (!$modelQuirofanoAnestesiologo->save()) {
+                      if  (!$lerror && !$modelQuirofanoAnestesiologo->save() ) {
                           $lerror = true;
+                          $mensaje = 'Errores en la operacion indicada. Verifique';
+
                           break;
                       }
-                      
+
                   } else {
                       $lerror = true;
+                      $mensaje = 'Errores en la operacion indicada. Verifique';
                       break;
                   }
 
@@ -265,9 +287,9 @@ class QuirofanoController extends Controller
               Yii::$app->response->format = Response::FORMAT_JSON;
 
               if ($lerror) {
-                  return ['status' => 'error'];
+                  return ['status' => 'error1', 'mensaje'=>$mensaje];
               }
-              return ['status' => 'success'];
+              return ['status' => 'success' ];
 
               Yii::$app->end();
           }
