@@ -279,7 +279,7 @@ class CirugiaprogramadaController extends Controller
          // y en el mismo no hay restriccion  sobre el dia
 
          $fechahoy=date('Y-m-d');
-         if($accion=="create"  && $fechahoy>=$dia  ){
+         if($accion=="create"  && $fechahoy>=$dia && !$cargador ){
            $this->setearMensaje('LA FECHA CIRUGÍA DEBE SER MAYOR AL DÍA ACTUAL.');
            return false;
          }
@@ -379,6 +379,11 @@ class CirugiaprogramadaController extends Controller
                 return false;
 
               }
+              if ($datos["Cirugiaprogramada"]["fecha_programada"] > $datos["Cirugiaprogramada"]["fecha_cirugia"]){
+                  $this->setearMensaje('LA FECHA PROGRAMADA DEBE SER MENOR QUE LA FECHA DE CIRUGIA .');
+                 return false;
+
+               }
 
             return true;
 

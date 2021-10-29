@@ -145,6 +145,20 @@ public static function isUserAdmin()    {
           }
 
     }
+    public function isCargador() {
+        $id= Yii::$app->user->identity->id;
+        $rol_cargador = Usuariorol::find()
+         //el id_rol 4 es del patologo
+         ->where(['and', "usuariorol.id_usuario=".$id ,"usuariorol.id_rol=4"])
+         ->count('*');
+         if ($rol_cargador >0){
+           return true;
+         }
+         else {
+           return false;
+         }
+
+      }
 
 
 

@@ -75,7 +75,10 @@ CrudAsset::register($this);
       </div>
       <div class='col-sm-3'>
 
-        <?=$form->field($model, 'fecha_programada')->input("date",['readonly' => true ,'value' => ($model->fecha_programada)?date('Y-m-d',strtotime($model->fecha_programada)):date('Y-m-d')])->label('Fecha  programada');  ?>
+        <?=$form->field($model, 'fecha_programada')->input("date",
+        [
+        'readonly' =>(Yii::$app->user->identity->isCargador())?false:true ,
+        'value' => ($model->fecha_programada)?date('Y-m-d',strtotime($model->fecha_programada)):date('Y-m-d')])->label('Fecha  programada');  ?>
 
       <label> Medico </label> </br>
       <input id="cirugia-medico" class="form-control" style="width:250px;" value='<?=($medico)?$medico->apellido.", ".$medico->nombre:'' ?>' type="text" readonly>
