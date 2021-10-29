@@ -97,11 +97,13 @@ use yii\helpers\Html;
     ]) ?>
 
   </div>
-<?  echo Html::a('<i class="fa fa-file-pdf-o"></i> Generar PDF', ['/cirugiaprogramada/informe', 'id' => $model->id], [
-          'class'=>'btn btn-danger',
-          'target'=>'_blank',
-          'data-toggle'=>'tooltip',
-          'title'=>'Se abrirá el archivo PDF generado en una nueva ventana'
-      ]);
+<?
+// echo Html::a('<i class="fa fa-file-pdf-o"></i> Generar PDF', ['/cirugiaprogramada/informe', 'id' => $model->id], [
+//           'class'=>'btn btn-danger',
+//           'target'=>'_blank',
+//           'data-toggle'=>'tooltip',
+//           'title'=>'Se abrirá el archivo PDF generado en una nueva ventana'
+//       ]);
+
       ?>
 </div>

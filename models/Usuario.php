@@ -58,7 +58,7 @@ class Usuario extends \yii\db\ActiveRecord
         return [
             [['usuario', 'contrasenia', 'nombre'], 'required'],
             [['activo'], 'default', 'value' => null],
-            [['activo'], 'integer'],
+            // [['activo'], 'integer'],
             [['descripcion', 'imagen'], 'string'],
             [['id_pantalla'], 'default', 'value' => null],
             [['id_pantalla'], 'integer'],
@@ -166,17 +166,17 @@ class Usuario extends \yii\db\ActiveRecord
 		   }
 
        public function isCargador() {
-         $id= Yii::$app->user->identity->id;
-         $rol_cargador = Usuariorol::find()
-          //el id_rol 4 es del patologo
-          ->where(['and', "usuariorol.id_usuario=".$id ,"usuariorol.id_rol=4"])
-          ->count('*');
-          if ($rol_cargador >0){
-            return true;
-          }
-          else {
-            return false;
-          }
+           $id= Yii::$app->user->identity->id;
+           $rol_cargador = Usuariorol::find()
+            //el id_rol 4 es del patologo
+            ->where(['and', "usuariorol.id_usuario=".$id ,"usuariorol.id_rol=4"])
+            ->count('*');
+            if ($rol_cargador >0){
+              return true;
+            }
+            else {
+              return false;
+            }
 
          }
          /**

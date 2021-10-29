@@ -24,7 +24,7 @@ class UsuarioSearch extends Usuario
             [['id', 'id_pantalla'], 'integer'],
             // SCESNARIO //
             [['num_documento',],'safe','on'=>'search'],
-            [['usuario',],'required','on'=>'search'],
+            // [['usuario',],'required','on'=>'search'],
             // SCESNARIO //
             [['usuario', 'contrasenia', 'nombre', 'email', 'descripcion', 'pantalla'], 'safe'],
         ];

@@ -529,45 +529,59 @@ class UsuarioController extends Controller
             ];
 
         } else {
-            if ($model->load($request->post())) {
-                    try {
-                      // Imagen
-                   //    $image = UploadedFile::getInstance($model, 'imagen');
-                   // if (!is_null($image)) {
-                   //
-                   //   // save with image
-                   //    // store the source file name
-                   //  //  $model->imagen = $image->name;
-                   //   $ext = (explode(".", $image->name));
-                   //   $ext= end($ext);
-                   //   // generate a unique file name to prevent duplicate filenames
-                   //  //  $model->avatar = Yii::$app->security->generateRandomString().".{$ext}";
-                   //   // the path to save file, you can set an uploadPath
-                   //   // in Yii::$app->params (as used in example below)
-                   //   Yii::$app->params['uploadPath'] = Yii::$app->basePath . '/web/uploads/avatar/';
-                   //   $nombreEncriptadoImagen=Yii::$app->security->generateRandomString().".{$ext}";
-                   //  // $path = Yii::$app->params['uploadPath'] . $nombreEncriptadoImagen;
-                   //   $path = Yii::$app->params['uploadPath'] . $nombreEncriptadoImagen;
-                   //   $model->id = Yii::$app->user->getId();
-                   //   $model->imagen= $nombreEncriptadoImagen;
-                   //     $image->saveAs($path);
-                   //     //Redimensionar
-                   //     Image::thumbnail(Yii::$app->params['uploadPath'].$nombreEncriptadoImagen, 120, 120)
-                   //     ->save(Yii::$app->params['uploadPath'].'sqr_'.$nombreEncriptadoImagen, ['quality' => 100]);
-                   //     Image::thumbnail(Yii::$app->params['uploadPath'].$nombreEncriptadoImagen, 30, 30)
-                   //            ->save(Yii::$app->params['uploadPath'].'sm_'.$nombreEncriptadoImagen, ['quality' => 100]);
-                   //
-                   //  if ($model->save()) {
-                   //      Yii::$app->session->setFlash('misDatosSubmitted');
-                   //      return $this->refresh();
-                   //  }
+            if(!$request->post()){
+              return $this->render('perfil', [
+                  'model' => $model,
+              ]);
+            }
+            $post=$request->post();
+            $image = UploadedFile::getInstance($model, 'imagen');
 
-                // }
-                } catch (yii\db\Exception $e) {
+            unset($post['Usuario']['imagen']);
 
-                    Yii::$app->response->format = Response::FORMAT_HTML;
-                    throw new NotFoundHttpException('Error en la base de datos.', 500);
+          if ($model->load($post) && $model->save() ) {
+
+             if (!is_null($image) && $image !=="") {
+
+                     // save with image
+                      // store the source file name
+                    //  $model->imagen = $image->name;
+                     $ext = (explode(".", $image->name));
+                     $ext= end($ext);
+                     // generate a unique file name to prevent duplicate filenames
+                    //  $model->avatar = Yii::$app->security->generateRandomString().".{$ext}";
+                     // the path to save file, you can set an uploadPath
+                     // in Yii::$app->params (as used in example below)
+                     Yii::$app->params['uploadPath'] = Yii::$app->basePath . '/web/uploads/avatar/';
+                     $nombreEncriptadoImagen=Yii::$app->security->generateRandomString().".{$ext}";
+                    // $path = Yii::$app->params['uploadPath'] . $nombreEncriptadoImagen;
+                     $path = Yii::$app->params['uploadPath'] . $nombreEncriptadoImagen;
+                     $model->id = Yii::$app->user->getId();
+                     $model->imagen= $nombreEncriptadoImagen;
+                       $image->saveAs($path);
+                       //Redimensionar
+                       Image::thumbnail(Yii::$app->params['uploadPath'].$nombreEncriptadoImagen, 120, 120)
+                       ->save(Yii::$app->params['uploadPath'].'sqr_'.$nombreEncriptadoImagen, ['quality' => 100]);
+                       Image::thumbnail(Yii::$app->params['uploadPath'].$nombreEncriptadoImagen, 30, 30)
+                              ->save(Yii::$app->params['uploadPath'].'sm_'.$nombreEncriptadoImagen, ['quality' => 100]);
+
+                    if ($model->save()) {
+                      Yii::$app->getSession()->setFlash('success', [
+                          'type' => 'success',
+                          'duration' => 5000,
+                          'icon' => 'fa fa-success',
+                          'message' => "Datos guardados correctamente",
+                          'title' => 'NOTIFICACIÓN',
+                          'positonY' => 'top',
+                          'positonX' => 'right'
+                      ]);
+
+                    }
+
                 }
+
+                return $this->refresh();
+
             }
 
             return $this->render('perfil', [

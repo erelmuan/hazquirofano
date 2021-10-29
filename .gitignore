@@ -20,6 +20,7 @@ vendor.ziṕ
 composer.phar
 # carpeta de imagenes
 /web/uploads
+/web/uploads/avatar
 # Mac DS_Store Files
 .DS_Store
 

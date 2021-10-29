@@ -11,9 +11,17 @@ $this->title = 'INICIO SESIÓN';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <!-- fullscreen_bg define el fondo de imagen -->
-<div id="fullscreen_bg" class="fullscreen_bg"/>
+<nav id="w0" class="navbar-inverse navbar-fixed-top navbar"><div class="container"><div class="navbar-header"><button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#w0-collapse"><span class="sr-only">Toggle navigation</span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span>
+<span class="icon-bar"></span></button><a class="navbar-brand" href="/hazquirofano/web/index.php">HAZ QUIROFANO</a></div><div id="w0-collapse" class="collapse navbar-collapse"><ul id="w1" class="navbar-nav navbar-right nav">
+</ul></div></div></nav>
+
+
+
+
+<div id="fullscreen_bg" />
     <div class="site-login">
-      <div id="titulo">  SISTEMA DE TURNOS DE QUIROFANO  </div>
         <!-- <p>Please fill out the following fields to login:</p> -->
         <div class="row">
             <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3">
@@ -40,7 +48,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
                           <div class="form-group">
                               <div class="col-lg-offset-1 col-lg-11">
-                                  <?= Html::submitButton('Login', ['class' => 'btn btn-primary btn-block', 'name' => 'login-button', 'tabindex' => '4']) ?>
+                                  <?= Html::submitButton('Entrar', ['class' => 'btn btn-primary btn-block', 'name' => 'login-button', 'tabindex' => '4']) ?>
                               </div>
                           </div>
 

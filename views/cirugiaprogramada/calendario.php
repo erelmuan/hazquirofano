@@ -41,46 +41,7 @@ background: #E6FDBD;
     <div class="clearfix"> <div class="nav navbar-right panel_toolbox"><?= Html::a('<i class="glyphicon glyphicon-arrow-left"></i> Atrás', ['/site'], ['class'=>'btn btn-danger grid-button']) ?></div>
     </div>
   </div>
-  <div class="x_panel" >
-      <ul class="nav navbar-right panel_toolbox">
-                          <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
-                          </li>
-      </ul>
-      <legend class="text-info"><small>Buscar horarios disponibles</small></legend>
-      <div class="x_content" style="display: none;">
-        <div class="calendario-search">
-          <div class="wiew-quirofanos-disponibles-index">
-              <div id="ajaxCrudDatatable">
-                  <?=GridView::widget([
-                      'id'=>'crud-datatable',
-                      'dataProvider' => $dataProvider,
-                      'filterModel' => $searchModel,
-                      'pjax'=>true,
-                      'columns' => require(__DIR__.'/_columnsView.php'),
-                      'toolbar'=> [
-                        Html::a('<i class="glyphicon glyphicon-repeat"></i>', [''],
-                        ['data-pjax'=>1, 'class'=>'btn btn-default', 'title'=>'Refrescar'])
-                      ],
-                      'striped' => true,
-                      'condensed' => true,
-                      //Adaptacion para moviles
-                      'responsiveWrap' => false,
-                      'panel' => [
-                          'type' => 'primary',
-                          'before'=>'<em>* Fecha Cirugia y Horario Inicio muestran resultados iguales y mayores al dato.</em>',
 
-                      ]
-                  ])?>
-              </div>
-          </div>
-
-
-
-        </div>
-
-
-      </div>
-  </div>
 
   <div class="body-content">
 
